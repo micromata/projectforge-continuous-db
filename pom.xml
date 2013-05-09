@@ -41,6 +41,13 @@
     </dependency>
     
     <!-- Provided stuff (if needed): -->
+    <dependency> <!-- Version check: 2010-08-28 -->
+      <!-- see: http://repository.jboss.org/nexus/content/groups/public/org/hibernate/hibernate-core/ -->
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>3.6.10.Final</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
       <artifactId>hibernate-jpa-2.0-api</artifactId>
