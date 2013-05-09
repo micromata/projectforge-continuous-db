@@ -23,7 +23,11 @@
 
 package org.projectforge.updater;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.projectforge.Version;
@@ -37,6 +41,8 @@ public abstract class UpdateEntryImpl extends UpdateEntry
   private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(UpdateEntryImpl.class);
 
   private static final long serialVersionUID = -1178486631632477422L;
+
+  private final static TimeZone UTC = TimeZone.getTimeZone("UTC");
 
   private String regionId;
 
@@ -73,13 +79,26 @@ public abstract class UpdateEntryImpl extends UpdateEntry
   public UpdateEntryImpl(final String regionId, final String versionString, final String isoDateString, final String description)
   {
     this.regionId = regionId;
-    final Date testDate = DateHelper.parseIsoDate(isoDateString, DateHelper.UTC);
+    final Date testDate = parseUTCIsoDate(isoDateString);
     if (testDate == null) {
       log.error("Given date doesn't match the iso format yyyy-MM-dd: " + isoDateString);
     }
     this.date = isoDateString;
     this.version = new Version(versionString);
     this.description = description;
+  }
+  
+  private Date parseUTCIsoDate(String isoDateString) {
+    final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    df.setTimeZone(UTC);
+    Date date;
+    try {
+      date = df.parse(isoDateString);
+    } catch (final ParseException ex) {
+      return null;
+    }
+    return date;
+
   }
 
   @Override

@@ -89,7 +89,8 @@ public abstract class UpdateEntry implements Serializable, Comparable<UpdateEntr
   /**
    * Does nothing at default.
    */
-  public void afterUpdate() {
+  public void afterUpdate()
+  {
   }
 
   public abstract String getPreCheckResult();
@@ -99,8 +100,28 @@ public abstract class UpdateEntry implements Serializable, Comparable<UpdateEntr
   @Override
   public String toString()
   {
-    final ReflectionToString tos = new ReflectionToString(this);
-    return tos.toString();
+    StringBuffer buf = new StringBuffer();
+    buf.append(this.getClass()).append("=[");
+    if (getRegionId() != null) {
+      buf.append("regionId=[").append(getRegionId()).append("]");
+    }
+    if (getVersion() != null) {
+      buf.append("regionId=[").append(getVersion()).append("]");
+    }
+    if (getDate() != null) {
+      buf.append("date=[").append(getDate()).append("]");
+    }
+    if (getRunningStatus() != null) {
+      buf.append("runningStatus=[").append(getRunningStatus()).append("]");
+    }
+    if (getRunningResult() != null) {
+      buf.append("runningResult=[").append(getRunningResult()).append("]");
+    }
+    if (getDescription() != null) {
+      buf.append("description=[").append(getDescription()).append("]");
+    }
+    buf.append("]");
+    return buf.toString();
   }
 
   /**

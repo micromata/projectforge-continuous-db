@@ -23,13 +23,22 @@
 
 package org.projectforge.updater;
 
+import javax.sql.DataSource;
 
 /**
  * For manipulating the database (patching data etc.)
  * @author Kai Reinhard (k.reinhard@micromata.de)
  * 
  */
-public interface class DatabaseExecutor
+public interface DatabaseExecutor
 {
+  public void setDataSource(DataSource datasource);
   
+  public DataSource getDataSource();
+
+  public void execute(String sql, boolean ignoreErrors);
+
+  public int queryForInt(String sql, Object... args);
+
+  public int update(String sql, Object... args);
 }

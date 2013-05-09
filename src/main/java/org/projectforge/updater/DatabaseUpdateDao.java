@@ -33,11 +33,6 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.projectforge.common.StringHelper;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * For manipulating the database (patching data etc.)
@@ -48,16 +43,21 @@ public class DatabaseUpdateDao
 {
   private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(DatabaseUpdateDao.class);
 
-  protected DataSource dataSource;
-
-  protected DatabaseSupport databaseSupport;
+  private UpdaterConfiguration configuration;
 
   private DatabaseSupport getDatabaseSupport()
   {
-    if (databaseSupport == null) {
-      databaseSupport = new DatabaseSupport();
-    }
-    return databaseSupport;
+    return configuration.getDatabaseSupport();
+  }
+
+  private DatabaseExecutor getDatabaseExecutor()
+  {
+    return configuration.getDatabaseExecutor();
+  }
+
+  private DataSource getDataSource()
+  {
+    return configuration.getDatabaseExecutor().getDataSource();
   }
 
   /**
@@ -110,7 +110,7 @@ public class DatabaseUpdateDao
      * TABLE_TYPE}); return resultSet.next(); } catch (final SQLException ex) { log.error(ex.getMessage(), ex); throw new
      * InternalErrorException(ex.getMessage()); }
      */
-    final JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+    DatabaseExecutor jdbc = getDatabaseExecutor();
     try {
       jdbc.queryForInt("SELECT COUNT(*) FROM " + table);
     } catch (final Exception ex) {
@@ -122,7 +122,7 @@ public class DatabaseUpdateDao
   public boolean doesTableAttributeExist(final String table, final String attribute)
   {
     accessCheck(false);
-    final JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+    DatabaseExecutor jdbc = getDatabaseExecutor();
     try {
       jdbc.queryForInt("SELECT COUNT(" + attribute + ") FROM " + table);
     } catch (final Exception ex) {
@@ -158,7 +158,7 @@ public class DatabaseUpdateDao
 
   public boolean internalIsTableEmpty(final String table)
   {
-    final JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+    DatabaseExecutor jdbc = getDatabaseExecutor();
     try {
       return jdbc.queryForInt("SELECT COUNT(*) FROM " + table) == 0;
     } catch (final Exception ex) {
@@ -187,7 +187,6 @@ public class DatabaseUpdateDao
   }
 
   /**
-   * @since 3.3.46
    * @param table
    * @param attribute
    * @return
@@ -200,7 +199,6 @@ public class DatabaseUpdateDao
   }
 
   /**
-   * @since 5.1
    * @param table
    * @param attribute
    * @param length
@@ -402,7 +400,6 @@ public class DatabaseUpdateDao
     buf.append(");\n");
   }
 
-  /** @since 3.3.48 */
   public boolean renameTableAttribute(final String table, final String oldName, final String newName)
   {
     final String alterStatement = getDatabaseSupport().renameAttribute(table, oldName, newName);
@@ -426,7 +423,7 @@ public class DatabaseUpdateDao
   }
 
   /**
-   * Creates missing data base indices.
+   * Creates missing data base indices of tables starting with 't_'.
    * @return Number of successful created data base indices.
    */
   public int createMissingIndices()
@@ -435,9 +432,10 @@ public class DatabaseUpdateDao
     log.info("createMissingIndices called.");
     int counter = 0;
     // For user / time period search:
-    createIndex("idx_timesheet_user_time", "t_timesheet", "user_id, start_time");
+    log.warn("************** TODO *************");
+    // TODO: createIndex("idx_timesheet_user_time", "t_timesheet", "user_id, start_time");
     try {
-      final ResultSet reference = dataSource.getConnection().getMetaData().getCrossReference(null, null, null, null, null, null);
+      final ResultSet reference = getDataSource().getConnection().getMetaData().getCrossReference(null, null, null, null, null, null);
       while (reference.next()) {
         final String fkTable = reference.getString("FKTABLE_NAME");
         final String fkCol = reference.getString("FKCOLUMN_NAME");
@@ -463,7 +461,7 @@ public class DatabaseUpdateDao
       first = StringHelper.append(buf, first, "?", ",");
     }
     buf.append(")");
-    final JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+    DatabaseExecutor jdbc = getDatabaseExecutor();
     final String sql = buf.toString();
     log.info(sql + "; values = " + StringHelper.listToString(", ", values));
     jdbc.update(sql, values);
@@ -477,7 +475,7 @@ public class DatabaseUpdateDao
   public boolean isVersionUpdated(final String regionId, final String version)
   {
     accessCheck(false);
-    final JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+    DatabaseExecutor jdbc = getDatabaseExecutor();
     final int result = jdbc.queryForInt("select count(*) from t_database_update where region_id=? and version=?", regionId, version);
     return result > 0;
   }
@@ -494,8 +492,7 @@ public class DatabaseUpdateDao
     accessCheck(true);
     try {
       final String jdbcString = "CREATE INDEX " + name + " ON " + table + "(" + attributes + ");";
-      final JdbcTemplate jdbc = new JdbcTemplate(dataSource);
-      jdbc.execute(jdbcString);
+      execute(jdbcString);
       log.info(jdbcString);
       return true;
     } catch (final Throwable ex) {
@@ -532,45 +529,22 @@ public class DatabaseUpdateDao
 
   /**
    * Executes the given String
-   * @since 3.3.48
    * @param jdbcString
    * @param ignoreErrors If true (default) then errors will be caught and logged.
    * @return true if no error occurred (no exception was caught), otherwise false.
    */
-  @SuppressWarnings({ "unchecked", "rawtypes"})
-  public boolean execute(final String jdbcString, final boolean ignoreErrors)
+  public void execute(final String jdbcString, final boolean ignoreErrors)
   {
     accessCheck(true);
     log.info(jdbcString);
-
-    final DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
-    final TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-    transactionTemplate.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-
-    final Object result = transactionTemplate.execute(new TransactionCallback() {
-      public Object doInTransaction(final TransactionStatus status)
-      {
-        final JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
-        if (ignoreErrors == true) {
-          try {
-            jdbcTemplate.execute(jdbcString);
-          } catch (final Throwable ex) {
-            log.info(ex.getMessage(), ex);
-            return Boolean.FALSE;
-          }
-        } else {
-          jdbcTemplate.execute(jdbcString);
-        }
-        return Boolean.TRUE;
-      }
-    });
-    return result != null && Boolean.TRUE.equals(result) == true;
+    DatabaseExecutor jdbc = getDatabaseExecutor();
+    jdbc.execute(jdbcString, ignoreErrors);
   }
 
   public int queryForInt(final String jdbcQuery)
   {
     accessCheck(false);
-    final JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+    DatabaseExecutor jdbc = getDatabaseExecutor();
     log.info(jdbcQuery);
     return jdbc.queryForInt(jdbcQuery);
   }
@@ -586,12 +560,6 @@ public class DatabaseUpdateDao
       return;
     }
     log.info("Executing data-base shutdown statement: " + statement);
-    final JdbcTemplate jdbc = new JdbcTemplate(dataSource);
-    jdbc.execute(statement);
-  }
-
-  public void setDataSource(final DataSource dataSource)
-  {
-    this.dataSource = dataSource;
+    execute(statement);
   }
 }

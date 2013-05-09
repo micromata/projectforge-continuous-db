@@ -24,7 +24,6 @@
 package org.projectforge.updater;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -138,13 +137,19 @@ public class SystemUpdater
    */
   public SortedSet<UpdateEntry> getUpdateEntries()
   {
-    synchronized (this) {
-      if (updateEntries == null) {
-        updateEntries = new TreeSet<UpdateEntry>();
-        updateEntries.addAll(DatabaseCoreUpdates.getUpdateEntries());
-      }
-    }
+    // TODO
+    // synchronized (this) {
+    // if (updateEntries == null) {
+    // updateEntries = new TreeSet<UpdateEntry>();
+    // updateEntries.addAll(DatabaseCoreUpdates.getUpdateEntries());
+    // }
+    // }
     return updateEntries;
+  }
+  
+  public void setUpdateEntries(SortedSet<UpdateEntry> updateEntries)
+  {
+    this.updateEntries = updateEntries;
   }
 
   /**
@@ -154,17 +159,26 @@ public class SystemUpdater
   public void update(final UpdateEntry updateEntry)
   {
     updateEntry.setRunningStatus(updateEntry.runUpdate());
-    final Table table = new Table(DatabaseUpdateDO.class);
-    if (databaseUpdateDao.doesTableExist(table.getName()) == true) {
-      databaseUpdateDao.insertInto(table.getName(), new String[] { "update_date", "region_id", "version", "execution_result",
-        "executed_by_user_fk", "description"},
-        new Object[] { new Date(), updateEntry.getRegionId(), String.valueOf(updateEntry.getVersion()), updateEntry.getRunningResult(),
-        PFUserContext.getUserId(), updateEntry.getDescription()});
-    } else {
-      log.info("Data base table '" + table.getName() + "' doesn't (yet) exist. Can't register update (OK).");
-    }
+    writeUpdateEntryLog(updateEntry);
     updateEntry.setPreCheckStatus(updateEntry.runPreCheck());
     runAllPreChecks();
+  }
+
+  /**
+   * You may implement this method to write update entries e. g. in a data-base table.
+   * @param updateEntry
+   */
+  protected void writeUpdateEntryLog(UpdateEntry updateEntry) {
+    // TODO
+    // final Table table = new Table(DatabaseUpdateDO.class);
+    // if (databaseUpdateDao.doesTableExist(table.getName()) == true) {
+    // databaseUpdateDao.insertInto(table.getName(), new String[] { "update_date", "region_id", "version", "execution_result",
+    // "executed_by_user_fk", "description"},
+    // new Object[] { new Date(), updateEntry.getRegionId(), String.valueOf(updateEntry.getVersion()), updateEntry.getRunningResult(),
+    // PFUserContext.getUserId(), updateEntry.getDescription()});
+    // } else {
+    // log.info("Data base table '" + table.getName() + "' doesn't (yet) exist. Can't register update (OK).");
+    // }
   }
 
   public void afterUpdate(final UpdateEntry updateEntry)
