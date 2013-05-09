@@ -513,7 +513,7 @@ public class DatabaseUpdateDao
     accessCheck(true);
     try {
       final String jdbcString = "CREATE INDEX " + name + " ON " + table + "(" + attributes + ");";
-      execute(jdbcString);
+      execute(jdbcString, false);
       log.info(jdbcString);
       return true;
     } catch (final Throwable ex) {
@@ -557,9 +557,9 @@ public class DatabaseUpdateDao
   public void execute(final String jdbcString, final boolean ignoreErrors)
   {
     accessCheck(true);
-    log.info(jdbcString);
     DatabaseExecutor jdbc = getDatabaseExecutor();
     jdbc.execute(jdbcString, ignoreErrors);
+    log.info(jdbcString);
   }
 
   public int queryForInt(final String jdbcQuery)
