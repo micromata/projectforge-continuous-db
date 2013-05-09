@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.projectforge</groupId>
+  <artifactId>projectforge-updater</artifactId>
+  <packaging>jar</packaging>
+  <parent>
+    <groupId>org.projectforge</groupId>
+    <artifactId>projectforge-parent</artifactId>
+    <version>5.1.1-SNAPSHOT</version> <!-- automatically set -->
+  </parent>
+  <properties>
+  </properties>
+  <licenses>
+    <license>
+      <name>Dual license</name>
+      <url>/LICENSE.txt</url>
+      <comments>All rights reserved.</comments>
+      <distribution>manual</distribution>
+    </license>
+  </licenses>
+  <build>
+    <finalName>projectforge-updater</finalName>
+  </build>
+  <repositories>
+    <repository>
+      <id>org.projectforge.repo</id>
+      <name>ProjectForge</name>
+      <url>http://www.projectforge.org/nexus/content/repositories/ProjectForge-Snapshots</url> <!-- automatically set -->
+    </repository>
+  </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>org.projectforge</groupId>
+      <artifactId>projectforge-common</artifactId>
+      <version>${projectforge.version}</version>
+    </dependency>
+    <dependency> <!-- Version check: 2012-12-02 -->
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
+    </dependency>
+    
+    <!-- Provided stuff (if needed): -->
+    <dependency>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.0-api</artifactId>
+      <version>1.0.1.Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>${spring.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+</project>
