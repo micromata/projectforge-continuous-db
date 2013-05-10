@@ -42,16 +42,19 @@ public class UpdaterConfiguration
 
   private DatabaseUpdateDao databaseUpdateDao;
 
+  private SchemaGenerator schemaGenerator;
+
   public void setDatabaseExecutor(DatabaseExecutor databaseExecutor)
   {
     this.databaseExecutor = databaseExecutor;
   }
-  
+
   public void setDatabaseUpdateDao(DatabaseUpdateDao databaseUpdateDao)
   {
     this.databaseUpdateDao = databaseUpdateDao;
+    this.schemaGenerator = null;
   }
-  
+
   public DatabaseUpdateDao getDatabaseUpdateDao()
   {
     return databaseUpdateDao;
@@ -82,5 +85,13 @@ public class UpdaterConfiguration
       systemUpdater = new SystemUpdater(this);
     }
     return systemUpdater;
+  }
+
+  public SchemaGenerator getSchemaGenerator()
+  {
+    if (schemaGenerator == null) {
+      schemaGenerator = new SchemaGenerator(getDatabaseUpdateDao());
+    }
+    return schemaGenerator;
   }
 }
