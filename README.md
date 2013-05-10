@@ -9,14 +9,14 @@ therefore you may set-up a complete data-base schema with only a few lines of co
 ## Example: Initial setup of a data-base
 
 ```java
-Class< ? >[] doClasses = new Class< ? >[] { //
-        UserDO.class, //
-        TaskDO.class, GroupDO.class, TaskDO.class, GroupTaskAccessDO.class, //
-        AccessEntryDO.class, //
-    };
+Class< ? >[] entities = new Class< ? >[] { //
+  UserDO.class, //
+  TaskDO.class, GroupDO.class, TaskDO.class, GroupTaskAccessDO.class, //
+  AccessEntryDO.class, //
+};
 
-if (databaseUpdateDao.doesEntitiesExist(doClasses) == false) {
-  SchemaGenerator schemaGenerator = configuration.createSchemaGenerator().add(doClasses);
+if (databaseUpdateDao.doesEntitiesExist(entities) == false) {
+  SchemaGenerator schemaGenerator = configuration.createSchemaGenerator().add(entities);
   schemaGenerator.createSchema();
   databaseUpdateDao.createMissingIndices(); // Create missing indices.
 }
