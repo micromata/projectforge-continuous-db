@@ -51,7 +51,7 @@ if (databaseUpdateDao.doesExist(table) == false) {
 }
 ```
 
-## Advantage in comparison to other tools
+## Advantage in comparison with other tools
 You may organize your data-base inital and update scripts programmatically. Therefore it's very easy to do further migration
 modifications during your update (e. g. merge columns etc.).  
 It's easy to handle multiple data-base dialects (you write only code once which fits all data-base dialects). The data-base dialect of the destination system is used.
