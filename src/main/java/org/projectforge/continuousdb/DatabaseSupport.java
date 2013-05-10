@@ -55,6 +55,11 @@ public class DatabaseSupport
   {
     this.dialect = dialect;
   }
+  
+  public DatabaseDialect getDialect()
+  {
+    return dialect;
+  }
 
   /**
    * Optimization for getting sum of durations. Currently only an optimization for PostgreSQL is implemented:

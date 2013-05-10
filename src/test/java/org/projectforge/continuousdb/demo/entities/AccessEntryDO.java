@@ -50,6 +50,9 @@ public class AccessEntryDO
 
   private Integer id;
 
+  private String AccessType;
+
+
   @Id
   @GeneratedValue
   @Column(name = "pk")
@@ -119,5 +122,17 @@ public class AccessEntryDO
   public void setAccessDelete(final boolean value)
   {
     this.accessDelete = value;
+  }
+
+
+  @Column(name = "access_type", length = 100)
+  public String getAccessType()
+  {
+    return AccessType;
+  }
+
+  public void setAccessType(String accessType)
+  {
+    AccessType = accessType;
   }
 }

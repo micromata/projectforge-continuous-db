@@ -27,10 +27,18 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.projectforge.common.DatabaseDialect;
 import org.projectforge.continuousdb.DatabaseUpdateDao;
 import org.projectforge.continuousdb.SchemaGenerator;
+import org.projectforge.continuousdb.Table;
+import org.projectforge.continuousdb.UpdateEntry;
+import org.projectforge.continuousdb.UpdateEntryImpl;
+import org.projectforge.continuousdb.UpdatePreCheckStatus;
+import org.projectforge.continuousdb.UpdateRunningStatus;
 import org.projectforge.continuousdb.UpdaterConfiguration;
+import org.projectforge.continuousdb.demo.entities.AccessEntryDO;
 import org.projectforge.continuousdb.demo.entities.Address1DO;
 import org.projectforge.continuousdb.demo.entities.Address2DO;
 import org.projectforge.continuousdb.demo.entities.GroupDO;
+import org.projectforge.continuousdb.demo.entities.GroupTaskAccessDO;
+import org.projectforge.continuousdb.demo.entities.TaskDO;
 import org.projectforge.continuousdb.demo.entities.UserDO;
 import org.projectforge.continuousdb.jdbc.DatabaseExecutorImpl;
 
@@ -80,11 +88,7 @@ public class Main
     // getSystemUpdater().setUpdateEntries(updateEntries);
 
     // Create tables:
-    if (databaseUpdateDao.doesEntitiesExist(UserDO.class, GroupDO.class) == false) {
-      SchemaGenerator schemaGenerator = configuration.createSchemaGenerator().add(UserDO.class, GroupDO.class);
-      schemaGenerator.createSchema();
-      configuration.getDatabaseUpdateDao().createMissingIndices();
-    }
+    createInitialSchema();
 
     // Alter tables
     if (databaseUpdateDao.doesTableAttributesExist(UserDO.class, "username", "password") == false) {
@@ -117,5 +121,57 @@ public class Main
     if (databaseUpdateDao.doesTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
       throw new RuntimeException("What the hell? The missing columns 'birthday' and 'address' weren't created as expected!");
     }
+  }
+
+  private void createInitialSchema()
+  {
+    UpdateEntry initialUpdateEntry = getInitialUpdateEntry();
+    if (initialUpdateEntry.runPreCheck() == UpdatePreCheckStatus.READY_FOR_UPDATE) {
+      initialUpdateEntry.runUpdate();
+    }
+  }
+  
+  private UpdateEntry getInitialUpdateEntry() {
+    final Class< ? >[] doClasses = new Class< ? >[] { //
+    // Please note, the order of the entities is the order of their creation!
+        UserDO.class, //
+        TaskDO.class, GroupDO.class, TaskDO.class, GroupTaskAccessDO.class, //
+        AccessEntryDO.class, //
+    };
+
+    @SuppressWarnings("serial")
+    UpdateEntryImpl entry = new UpdateEntryImpl("core", "2013-05-10", "Adds all core tables T_*.") {
+
+      @Override
+      public UpdatePreCheckStatus runPreCheck()
+      {
+        // Does the data-base tables already exist?
+        if (databaseUpdateDao.doesEntitiesExist(doClasses) == false) {
+          return UpdatePreCheckStatus.READY_FOR_UPDATE;
+        }
+        return UpdatePreCheckStatus.ALREADY_UPDATED;
+      }
+
+      @Override
+      public UpdateRunningStatus runUpdate()
+      {
+        if (databaseUpdateDao.doesExist(new Table(UserDO.class)) == false && configuration.getDialect() == DatabaseDialect.PostgreSQL) {
+          // User table doesn't exist, therefore schema should be empty. PostgreSQL needs sequence for primary keys:
+          databaseUpdateDao.createSequence("hibernate_sequence", true);
+        }
+        final SchemaGenerator schemaGenerator = configuration.createSchemaGenerator().add(doClasses);
+        // You may add also add table manually, e. g. of third party libraries or such which aren't yet supported:
+        // final Table propertyDeltaTable = schemaGenerator.getTable(PropertyDelta.class);
+        // propertyDeltaTable.addAttribute(new TableAttribute("clazz", TableAttributeType.VARCHAR, 31).setNullable(false));
+        // final Table historyEntryTable = schemaGenerator.getTable(HistoryEntry.class);
+        // final TableAttribute typeAttr = historyEntryTable.getAttributeByName("type");
+        // typeAttr.setType(TableAttributeType.INT);
+        schemaGenerator.createSchema();
+        databaseUpdateDao.createMissingIndices(); // Create missing indices.
+
+        return UpdateRunningStatus.DONE;
+      }
+    };
+    return entry;
   }
 }

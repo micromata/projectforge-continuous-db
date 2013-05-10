@@ -76,6 +76,11 @@ public class UpdaterConfiguration
     return databaseSupport;
   }
 
+  public DatabaseDialect getDialect()
+  {
+    return getDatabaseSupport().getDialect();
+  }
+
   public SystemUpdater getSystemUpdater()
   {
     if (systemUpdater == null) {
