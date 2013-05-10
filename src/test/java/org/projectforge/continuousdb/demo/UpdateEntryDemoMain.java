@@ -47,13 +47,13 @@ import org.projectforge.continuousdb.jdbc.DatabaseExecutorImpl;
  * @author Kai Reinhard (k.reinhard@micromata.de)
  * 
  */
-public class UpdateEntryMain
+public class UpdateEntryDemoMain
 {
   public static void main(String[] args)
   {
-    UpdateEntryMain main = null;
+    UpdateEntryDemoMain main = null;
     try {
-      main = new UpdateEntryMain();
+      main = new UpdateEntryDemoMain();
       // Create tables:
       main.createInitialSchema();
       // Create and update single table:
@@ -69,7 +69,7 @@ public class UpdateEntryMain
 
   private DatabaseUpdateDao databaseUpdateDao;
 
-  private UpdateEntryMain()
+  private UpdateEntryDemoMain()
   {
     BasicDataSource dataSource = new BasicDataSource();
     dataSource.setDriverClassName("org.hsqldb.jdbcDriver");
