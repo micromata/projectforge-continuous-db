@@ -8,7 +8,7 @@ therefore you may set-up a complete data-base schema with only a few lines of co
 
 ## Example: Initial setup of a data-base
 
-Please refer ```DemoMain.java``` for a first example.
+The following example will create the whole data-base schema for the given entities. Please refer ```DemoMain.java``` for a first example.
 
 ```java
 Class< ? >[] entities = new Class< ? >[] {
@@ -40,9 +40,21 @@ if (databaseUpdateDao.doesTableAttributesExist(AddressDO.class, "birthday", "add
 }
 ```
 
+## Manual creation without JPA annotations
+You may create and update the data-base schema without JPA annotations:
+```java
+Table table = new Table("t_address");
+if (databaseUpdateDao.doesExist(table) == false) {
+  table.addAttribute(new TableAttribute("name", TableAttributeType.VARCHAR, 255)).addAttribute(
+    new TableAttribute("birthday", TableAttributeType.DATE));
+  databaseUpdateDao.createTable(table);
+}
+```
+
 ## Advantage in comparison to other tools
 You may organize your data-base inital and update scripts programmatically. Therefore it's very easy to do further migration
-modifications during your update (e. g. merge columns etc.).
+modifications during your update (e. g. merge columns etc.).  
+It's easy to handle multiple data-base dialects (you write only code once which fits all data-base dialects). The data-base dialect of the destination system is used.
 
 ## UpdateEntries
 For large projects with sub-modules (such as ProjectForge itself) it's recommended to organize setups by using the UpdateEntry class. Please refer http://www.projectforge.org/pf-en/Convenientupdates for seeing ProjectForge in action. The administration user is able to update the system by simply clicking the versioned update entries.
