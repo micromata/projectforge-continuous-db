@@ -19,7 +19,7 @@
     </license>
   </licenses>
   <build>
-    <finalName>projectforge-updater</finalName>
+    <finalName>projectforge-continuous-db</finalName>
   </build>
   <repositories>
     <repository>
