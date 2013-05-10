@@ -31,6 +31,12 @@ import org.projectforge.continuousdb.TableAttributeType;
 /**
  * Represents one attribute of a table (e. g. for creation).
  * 
+ * You may add this hook by simply calling:
+ * 
+ * <pre>
+ * TableAttribute.register(new TableAttributeHookImpl());
+ * </pre>
+ * 
  * @author Kai Reinhard (k.reinhard@micromata.de)
  */
 public class TableAttributeHookImpl implements TableAttributeHook
