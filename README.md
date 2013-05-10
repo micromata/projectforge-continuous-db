@@ -46,8 +46,8 @@ For large projects with sub-modules (such as ProjectForge itself) it's recommend
 They have full control over the update process, no magic by automatical schema update of Hibernate etc.
 
 ## Restrictions
-* Currently PostgreSQL and HSQLDB are supported. Please refer ```DatabaseSupport.java``` for adding new data-base dialects (This should be possible very easy).
-* Currently only annotations of getter methods are supported (but it should be very easy to support also field annotation).
+* Currently PostgreSQL and HSQLDB are supported. Please refer ```DatabaseSupport.java``` for adding new data-base dialects (this should be very easy).
+* Currently only annotations of getter methods are supported (but it should be very easy to support also field annotations).
 * The main JPA annotations are supported. For Hibernate specific annotations such as Type please refer the hook class ```TableAttributeHookImpl``` of the hibernate package.
 
 ## Developers are welcome!
