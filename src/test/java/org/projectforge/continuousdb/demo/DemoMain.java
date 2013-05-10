@@ -92,26 +92,6 @@ public class DemoMain
     databaseUpdateDao.shutdownDatabase();
   }
 
-  private void createAndUpdateAddressDO()
-  {
-    if (databaseUpdateDao.doesEntitiesExist(Address1DO.class) == false) {
-      // Initial creation of t_address because data-base table doesn't yet exist:
-      configuration.createSchemaGenerator().add(Address1DO.class).createSchema();
-    }
-    if (databaseUpdateDao.doesEntitiesExist(Address1DO.class) == false) {
-      throw new RuntimeException("What the hell? The table '" + Address1DO.class + "' wasn't created as expected!");
-    }
-    // Table t_address does now exist.
-    if (databaseUpdateDao.doesTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
-      // One or both attributes don't yet exist, alter table to add the missing columns now:
-      databaseUpdateDao.addTableAttributes(Address2DO.class, "birthday", "address"); // Works also, if one of both attributes does already
-      // exist.
-    }
-    if (databaseUpdateDao.doesTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
-      throw new RuntimeException("What the hell? The missing columns 'birthday' and 'address' weren't created as expected!");
-    }
-  }
-
   private void createInitialSchema()
   {
     final Class< ? >[] doClasses = new Class< ? >[] { //
@@ -135,6 +115,26 @@ public class DemoMain
       // typeAttr.setType(TableAttributeType.INT);
       schemaGenerator.createSchema();
       databaseUpdateDao.createMissingIndices(); // Create missing indices.
+    }
+  }
+
+  private void createAndUpdateAddressDO()
+  {
+    if (databaseUpdateDao.doesEntitiesExist(Address1DO.class) == false) {
+      // Initial creation of t_address because data-base table doesn't yet exist:
+      configuration.createSchemaGenerator().add(Address1DO.class).createSchema();
+    }
+    if (databaseUpdateDao.doesEntitiesExist(Address1DO.class) == false) {
+      throw new RuntimeException("What the hell? The table '" + Address1DO.class + "' wasn't created as expected!");
+    }
+    // Table t_address does now exist.
+    if (databaseUpdateDao.doesTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
+      // One or both attributes don't yet exist, alter table to add the missing columns now:
+      databaseUpdateDao.addTableAttributes(Address2DO.class, "birthday", "address"); // Works also, if one of both attributes does already
+      // exist.
+    }
+    if (databaseUpdateDao.doesTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
+      throw new RuntimeException("What the hell? The missing columns 'birthday' and 'address' weren't created as expected!");
     }
   }
 }
