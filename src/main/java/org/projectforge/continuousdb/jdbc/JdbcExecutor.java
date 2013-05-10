@@ -23,6 +23,12 @@
 
 package org.projectforge.continuousdb.jdbc;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
 /**
  * @author Kai Reinhard (k.reinhard@micromata.de)
  * 
@@ -31,5 +37,60 @@ public abstract class JdbcExecutor
 {
   private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(JdbcExecutor.class);
 
-  public abstract void execute(String sql);
+  protected abstract Object execute(PreparedStatement stmt) throws SQLException;
+
+  private DataSource dataSource;
+
+  public JdbcExecutor(DataSource dataSource)
+  {
+    this.dataSource = dataSource;
+  }
+
+  public Object execute(String sql, boolean ignoreErrors, Object... args)
+  {
+    Connection con = null;
+    PreparedStatement stmt = null;
+    Object result = null;
+    try {
+      try {
+        con = dataSource.getConnection();
+        stmt = con.prepareStatement(sql);
+        if (args != null && args.length > 0) {
+          for (int i = 0; i < args.length; i++) {
+            stmt.setObject(i + 1, args[i]);
+          }
+        }
+        result = execute(stmt);
+        return result;
+      } catch (SQLException e) {
+        if (ignoreErrors == false) {
+          throw new RuntimeException(e);
+        }
+        log.error("Exception encountered " + e, e);
+        return null;
+      }
+    } finally {
+      boolean hasErrors = false;
+      if (stmt != null) {
+        try {
+          stmt.close();
+        } catch (Exception e) {
+          hasErrors = true;
+          log.error("Exception encountered " + e, e);
+        }
+      }
+      if (con != null) {
+        try {
+          con.close();
+        } catch (Exception e) {
+          hasErrors = true;
+          log.error("Exception encountered " + e, e);
+        }
+      }
+      if (hasErrors == true) {
+        throw new RuntimeException();
+      }
+    }
+  }
+
 }

@@ -23,16 +23,13 @@
 
 package org.projectforge.continuousdb.jdbc;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.sql.DataSource;
 
 import org.projectforge.continuousdb.DatabaseExecutor;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * Using plain jdbc for executing jdbc commands. DON'T USE THIS CLASS FOR PRODUCTION! This class is only for demonstration purposes, because
@@ -42,8 +39,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
  */
 public class DatabaseExecutorImpl implements DatabaseExecutor
 {
-  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(DatabaseExecutorImpl.class);
-
   private DataSource dataSource;
 
   @Override
@@ -61,110 +56,50 @@ public class DatabaseExecutorImpl implements DatabaseExecutor
   @Override
   public void execute(final String sql, final boolean ignoreErrors)
   {
-    Connection con = null;
-    Statement stmt = null;
-    try {
-      try {
-        con = dataSource.getConnection();
-        stmt = con.createStatement();
-        stmt.execute(sql);
-      } catch (SQLException e) {
-        if (ignoreErrors == false) {
-          throw new RuntimeException(e);
-        }
-        log.error("Exception encountered " + e, e);
+    JdbcExecutor jdbc = new JdbcExecutor(dataSource) {
+      @Override
+      protected Object execute(PreparedStatement stmt) throws SQLException
+      {
+        stmt.execute();
+        return null;
       }
-    } finally {
-      if (stmt != null) {
-        try {
-          stmt.close();
-        } catch (Exception e) {
-          log.error("Exception encountered " + e, e);
-        }
-      }
-      if (con != null) {
-        try {
-          con.close();
-        } catch (Exception e) {
-          log.error("Exception encountered " + e, e);
-        }
-      }
-    }
+    };
+    jdbc.execute(sql, ignoreErrors);
   }
 
   @Override
-  public int queryForInt(String sql, Object... args)
+  public int queryForInt(final String sql, Object... args)
   {
-    Connection con = null;
-    PreparedStatement stmt = null;
-    try {
-      try {
-        con = dataSource.getConnection();
-        stmt = con.prepareStatement(sql);
-        if (args != null) {
-          for (int i = 0; i < args.length; i++) {
-            stmt.setObject(i + 1, args[i]);
-          }
-        }
-        ResultSet rs = stmt.executeQuery(sql);
+    JdbcExecutor jdbc = new JdbcExecutor(dataSource) {
+      @Override
+      protected Object execute(PreparedStatement stmt) throws SQLException
+      {
+        ResultSet rs = stmt.executeQuery();
         if (rs.next() == false) {
           throw new RuntimeException("No result set: " + sql);
         }
         return rs.getInt(1);
-      } catch (SQLException e) {
-        throw new RuntimeException(e);
       }
-    } finally {
-      if (stmt != null) {
-        try {
-          stmt.close();
-        } catch (Exception e) {
-          log.error("Exception encountered " + e, e);
-        }
-      }
-      if (con != null) {
-        try {
-          con.close();
-        } catch (Exception e) {
-          log.error("Exception encountered " + e, e);
-        }
-      }
-    }
+    };
+    Object obj = jdbc.execute(sql, false);
+    return (Integer)obj;
   }
 
   @Override
-  public int update(String sql, Object... args)
+  public int update(final String sql, Object... args)
   {
-    Connection con = null;
-    PreparedStatement stmt = null;
-    try {
-      try {
-        con = dataSource.getConnection();
-        stmt = con.prepareStatement(sql);
-        if (args != null) {
-          for (int i = 0; i < args.length; i++) {
-            stmt.setObject(i + 1, args[i]);
-          }
+    JdbcExecutor jdbc = new JdbcExecutor(dataSource) {
+      @Override
+      protected Object execute(PreparedStatement stmt) throws SQLException
+      {
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next() == false) {
+          throw new RuntimeException("No result set: " + sql);
         }
         return stmt.executeUpdate();
-      } catch (SQLException e) {
-        throw new RuntimeException(e);
       }
-    } finally {
-      if (stmt != null) {
-        try {
-          stmt.close();
-        } catch (Exception e) {
-          log.error("Exception encountered " + e, e);
-        }
-      }
-      if (con != null) {
-        try {
-          con.close();
-        } catch (Exception e) {
-          log.error("Exception encountered " + e, e);
-        }
-      }
-    }
+    };
+    Object obj = jdbc.execute(sql, false);
+    return (Integer)obj;
   }
 }
