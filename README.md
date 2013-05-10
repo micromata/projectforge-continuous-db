@@ -22,17 +22,15 @@ if (databaseUpdateDao.doesEntitiesExist(doClasses) == false) {
 }
 ```
 
-Please note: foreign-keys, one-to-many, many-to-many relations are supported as well as different column types. You may extend
+Please note: foreign-keys, one-to-many, many-to-one and many-to-many relations are supported as well as different column types. You may extend
 this module very easy for support of more JPA annotations.
 
 ## Example: Update script
 
+You may add columns to a table within your new version:
+
 ```java
-if (databaseUpdateDao.doesEntitiesExist(Address1DO.class) == false) {
-  // Initial creation of t_address because data-base table doesn't yet exist:
-  configuration.createSchemaGenerator().add(Address1DO.class).createSchema();
-}
-if (databaseUpdateDao.doesTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
+if (databaseUpdateDao.doesTableAttributesExist(AddressDO.class, "birthday", "address") == false) {
   // One or both attributes don't yet exist, alter table to add the missing columns now:
   databaseUpdateDao.addTableAttributes(Address2DO.class, "birthday", "address"); // Works also, if one of both attributes does already
   // exist.
