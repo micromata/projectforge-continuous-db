@@ -16,6 +16,7 @@ Class< ? >[] entities = new Class< ? >[] {
 };
 
 if (databaseUpdateDao.doesEntitiesExist(entities) == false) {
+  // At least one table of the given entities doesn't exist. Create the missing tables:
   SchemaGenerator schemaGenerator = configuration.createSchemaGenerator().add(entities);
   schemaGenerator.createSchema();
   databaseUpdateDao.createMissingIndices(); // Create missing indices.
