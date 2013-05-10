@@ -8,6 +8,8 @@ therefore you may set-up a complete data-base schema with only a few lines of co
 
 ## Example: Initial setup of a data-base
 
+Please refer ```DemoMain.java``` for a first example.
+
 ```java
 Class< ? >[] entities = new Class< ? >[] {
   UserDO.class,
