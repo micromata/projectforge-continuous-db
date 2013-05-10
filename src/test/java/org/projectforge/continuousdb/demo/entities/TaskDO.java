@@ -23,6 +23,8 @@
 
 package org.projectforge.continuousdb.demo.entities;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -45,6 +47,12 @@ public class TaskDO extends DefaultBaseDO
   private String title;
 
   private String description;
+  
+  private BigDecimal duration;
+  
+  private Integer maxHours;
+
+  private UserDO responsibleUser;
 
   @Column(name = "description", length = 1000)
   public String getDescription()
@@ -80,6 +88,43 @@ public class TaskDO extends DefaultBaseDO
   public TaskDO setParentTask(final TaskDO parentTask)
   {
     this.parentTask = parentTask;
+    return this;
+  }
+
+  @Column(name = "max_hours")
+  public Integer getMaxHours()
+  {
+    return maxHours;
+  }
+
+  public TaskDO setMaxHours(final Integer maxHours)
+  {
+    this.maxHours = maxHours;
+    return this;
+  }
+
+  @Column(name = "duration", scale = 2, precision = 10)
+  public BigDecimal getDuration()
+  {
+    return duration;
+  }
+
+  public TaskDO setDuration(final BigDecimal duration)
+  {
+    this.duration = duration;
+    return this;
+  }
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "responsible_user_id")
+  public UserDO getResponsibleUser()
+  {
+    return responsibleUser;
+  }
+
+  public TaskDO setResponsibleUser(final UserDO responsibleUser)
+  {
+    this.responsibleUser = responsibleUser;
     return this;
   }
 }

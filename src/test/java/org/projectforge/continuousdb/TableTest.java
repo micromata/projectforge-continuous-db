@@ -27,25 +27,25 @@ import static org.junit.Assert.assertEquals;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.projectforge.continuousdb.Table;
-import org.projectforge.continuousdb.TableAttribute;
+import org.projectforge.continuousdb.demo.entities.GroupTaskAccessDO;
+import org.projectforge.continuousdb.demo.entities.TaskDO;
+import org.projectforge.continuousdb.demo.entities.UserDO;
+import org.projectforge.continuousdb.demo.entities.UserRightDO;
 
 public class TableTest
 {
   @Test
   public void createTables()
   {
-    assertEquals("T_PF_USER", new Table(PFUserDO.class).getName());
+    assertEquals("T_USER", new Table(UserDO.class).getName());
     assertEquals("T_TASK", new Table(TaskDO.class).getName());
-    assertEquals("T_TIMESHEET", new Table(TimesheetDO.class).getName());
+    assertEquals("T_GROUP_TASK_ACCESS", new Table(GroupTaskAccessDO.class).getName());
 
     final Table table = new Table(TaskDO.class);
-    table.addAttributes("title", "priority", "maxHours", "startDate", "responsibleUser");
+    table.addAttributes("title",  "maxHours", "responsibleUser");
     assertAttribute(table.getAttributes().get(0), "title");
-    assertAttribute(table.getAttributes().get(1), "priority");
-    assertAttribute(table.getAttributes().get(2), "max_hours");
-    assertAttribute(table.getAttributes().get(3), "start_date");
-    assertAttribute(table.getAttributes().get(4), "responsible_user_id");
+    assertAttribute(table.getAttributes().get(1), "max_hours");
+    assertAttribute(table.getAttributes().get(2), "responsible_user_id");
 
     assertAttribute(table.getAttributeByProperty("responsibleUser"), "responsible_user_id");
   }
@@ -53,9 +53,9 @@ public class TableTest
   @Test
   public void autoAddAttributes()
   {
-    Table table = new Table(ConfigurationDO.class);
+    Table table = new Table(UserDO.class);
     table.autoAddAttributes();
-    assertAttribute(table, "stringValue");
+    assertAttribute(table, "username");
     assertAttribute(table, "created");
 
     table = new Table(UserRightDO.class);

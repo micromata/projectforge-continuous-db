@@ -28,8 +28,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.projectforge.continuousdb.TableAttribute;
-import org.projectforge.continuousdb.TableAttributeType;
+import org.projectforge.continuousdb.demo.entities.GroupTaskAccessDO;
+import org.projectforge.continuousdb.demo.entities.TaskDO;
+import org.projectforge.continuousdb.demo.entities.UserDO;
+import org.projectforge.continuousdb.demo.entities.UserRightDO;
 
 public class TableAttributeTest
 {
@@ -40,31 +42,28 @@ public class TableAttributeTest
     attr = assertAttribute(TaskDO.class, "id", "pk", TableAttributeType.INT, true, false);
     attr = assertAttribute(TaskDO.class, "created", "created", TableAttributeType.TIMESTAMP, false, true);
     attr = assertAttribute(TaskDO.class, "lastUpdate", "last_update", TableAttributeType.TIMESTAMP, false, true);
-    attr = assertAttribute(PFUserDO.class, "locale", "locale", TableAttributeType.LOCALE, false, true);
+    attr = assertAttribute(UserDO.class, "locale", "locale", TableAttributeType.LOCALE, false, true);
     attr = assertAttribute(TaskDO.class, "duration", "duration", TableAttributeType.DECIMAL, false, true);
     assertEquals(2, attr.getScale());
     assertEquals(10, attr.getPrecision());
     attr = assertAttribute(TaskDO.class, "title", "title", TableAttributeType.VARCHAR, false, false);
-    assertEquals(TaskDO.TITLE_LENGTH, attr.getLength());
-    attr = assertAttribute(TaskDO.class, "workpackageCode", "workpackage_code", TableAttributeType.VARCHAR, false, true);
     assertEquals(100, attr.getLength());
     attr = assertAttribute(TaskDO.class, "description", "description", TableAttributeType.VARCHAR, false, true);
-    assertEquals(TaskDO.DESCRIPTION_LENGTH, attr.getLength());
+    assertEquals(1000, attr.getLength());
     attr = assertAttribute(TaskDO.class, "maxHours", "max_hours", TableAttributeType.INT, false, true);
-    attr = assertAttribute(TaskDO.class, "kost2IsBlackList", "kost2_is_black_list", TableAttributeType.BOOLEAN, false, false);
-    attr = assertAttribute(TaskDO.class, "responsibleUser", "responsible_user_id", TableAttributeType.INT, false, true);
-    assertEquals("T_PF_USER", attr.getForeignTable());
-    assertEquals("pk", attr.getForeignAttribute());
-    attr = assertAttribute(TaskDO.class, "priority", "priority", TableAttributeType.VARCHAR, false, true);
-    assertEquals(TaskDO.PRIORITY_LENGTH, attr.getLength());
-
-    attr = assertAttribute(TimesheetDO.class, "startTime", "start_time", TableAttributeType.TIMESTAMP, false, false);
-    attr = assertAttribute(TimesheetDO.class, "task", "task_id", TableAttributeType.INT, false, false);
+    attr = assertAttribute(TaskDO.class, "parentTask", "parent_task_id", TableAttributeType.INT, false, true);
     assertEquals("T_TASK", attr.getForeignTable());
     assertEquals("pk", attr.getForeignAttribute());
-    attr = assertAttribute(PFUserDO.class, "loginFailures", "loginFailures", TableAttributeType.INT, false, false);
+
+    attr = assertAttribute(UserDO.class, "deleted", "deleted", TableAttributeType.BOOLEAN, false, false);
+    attr = assertAttribute(TaskDO.class, "responsibleUser", "responsible_user_id", TableAttributeType.INT, false, true);
+    assertEquals("T_USER", attr.getForeignTable());
+    assertEquals("pk", attr.getForeignAttribute());
+    attr = assertAttribute(UserRightDO.class, "value", "value", TableAttributeType.VARCHAR, false, true);
+    assertEquals(40, attr.getLength());
+
+    attr = assertAttribute(UserDO.class, "loginFailures", "loginFailures", TableAttributeType.INT, false, false);
     attr = assertAttribute(GroupTaskAccessDO.class, "recursive", "recursive", TableAttributeType.BOOLEAN, false, false);
-    attr = assertAttribute(Kost1DO.class, "nummernkreis", "nummernkreis", TableAttributeType.INT, false, false);
   }
 
   private TableAttribute assertAttribute(final Class< ? > cls, final String property, final String name, final TableAttributeType type,
