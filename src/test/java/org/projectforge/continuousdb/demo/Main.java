@@ -43,8 +43,15 @@ public class Main
 {
   public static void main(String[] args)
   {
-    Main main = new Main();
-    main.createAndUpdateAddressDO();
+    Main main = null;
+    try {
+      main = new Main();
+      main.createAndUpdateAddressDO();
+    } finally {
+      if (main != null) {
+        main.shutdown();
+      }
+    }
   }
 
   private UpdaterConfiguration configuration;
@@ -58,10 +65,6 @@ public class Main
     dataSource.setUsername("sa");
     // dataSource.setPassword("password");
     dataSource.setUrl("jdbc:hsqldb:testdatabase");
-    dataSource.setMaxActive(10);
-    dataSource.setMaxIdle(5);
-    dataSource.setInitialSize(5);
-    dataSource.setValidationQuery("SELECT 1");
 
     configuration = new UpdaterConfiguration();
     configuration.setDialect(DatabaseDialect.HSQL);
@@ -89,6 +92,11 @@ public class Main
       databaseUpdateDao.addTableAttributes(UserDO.class, "username", "password"); // Works also, if one of both attributes does already
                                                                                   // exist.
     }
+  }
+
+  private void shutdown()
+  {
+    databaseUpdateDao.shutdownDatabase();
   }
 
   private void createAndUpdateAddressDO()
