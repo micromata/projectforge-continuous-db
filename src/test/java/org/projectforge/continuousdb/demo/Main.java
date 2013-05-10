@@ -54,6 +54,9 @@ public class Main
     Main main = null;
     try {
       main = new Main();
+      // Create tables:
+      main.createInitialSchema();
+      // Create and update single table:
       main.createAndUpdateAddressDO();
     } finally {
       if (main != null) {
@@ -86,16 +89,6 @@ public class Main
     // final SortedSet<UpdateEntry> updateEntries = new TreeSet<UpdateEntry>();
     // updateEntries.addAll(DatabaseCoreUpdates.getUpdateEntries(this));
     // getSystemUpdater().setUpdateEntries(updateEntries);
-
-    // Create tables:
-    createInitialSchema();
-
-    // Alter tables
-    if (databaseUpdateDao.doesTableAttributesExist(UserDO.class, "username", "password") == false) {
-      // username and/or password not yet in table t_user:
-      databaseUpdateDao.addTableAttributes(UserDO.class, "username", "password"); // Works also, if one of both attributes does already
-                                                                                  // exist.
-    }
   }
 
   private void shutdown()
