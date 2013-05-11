@@ -128,7 +128,7 @@ public class DatabaseExecutorImpl implements DatabaseExecutor
         }
       }
     };
-    Object obj = jdbc.execute(sql, false);
+    Object obj = jdbc.execute(sql, false, args);
     return (Integer) obj;
   }
 
