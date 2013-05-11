@@ -26,6 +26,7 @@ package org.projectforge.continuousdb;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.UniqueConstraint;
@@ -574,6 +575,22 @@ public class DatabaseUpdateDao
     DatabaseExecutor jdbc = getDatabaseExecutor();
     log.info(jdbcQuery);
     return jdbc.queryForInt(jdbcQuery);
+  }
+
+  public List<DatabaseResultRow> query(final String sql, Object... args)
+  {
+    accessCheck(false);
+    DatabaseExecutor jdbc = getDatabaseExecutor();
+    log.info(sql);
+    return jdbc.query(sql, args);
+  }
+
+  public int update(final String sql, Object... args)
+  {
+    accessCheck(false);
+    DatabaseExecutor jdbc = getDatabaseExecutor();
+    log.info(sql);
+    return jdbc.update(sql, args);
   }
 
   /**
