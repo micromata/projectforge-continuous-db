@@ -28,6 +28,8 @@ import org.projectforge.common.DatabaseDialect;
 import org.projectforge.continuousdb.DatabaseUpdateDao;
 import org.projectforge.continuousdb.SchemaGenerator;
 import org.projectforge.continuousdb.Table;
+import org.projectforge.continuousdb.TableAttribute;
+import org.projectforge.continuousdb.TableAttributeType;
 import org.projectforge.continuousdb.UpdaterConfiguration;
 import org.projectforge.continuousdb.demo.entities.AccessEntryDO;
 import org.projectforge.continuousdb.demo.entities.Address1DO;
@@ -54,6 +56,8 @@ public class DemoMain
       main.createInitialSchema();
       // Create and update single table:
       main.createAndUpdateAddressDO();
+      // Create and manipulate data-base manually:
+      main.manualModifications();
     } finally {
       if (main != null) {
         main.shutdown();
@@ -136,5 +140,19 @@ public class DemoMain
     if (databaseUpdateDao.doesTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
       throw new RuntimeException("What the hell? The missing columns 'birthday' and 'address' weren't created as expected!");
     }
+  }
+
+  private void manualModifications()
+  {
+    Table table = new Table("t_person");
+    if (databaseUpdateDao.doesTableExist(table.getName()) == false) {
+      table.addAttribute(new TableAttribute("pk", TableAttributeType.INT).setPrimaryKey(true)) //
+          .addAttribute(new TableAttribute("birthday", TableAttributeType.DATE)) //
+          .addAttribute(new TableAttribute("name", TableAttributeType.VARCHAR, 100).setNullable(false)) //
+          .addAttribute(new TableAttribute("user_id", TableAttributeType.INT).setForeignTable("t_user").setForeignAttribute("pk"));
+      databaseUpdateDao.createTable(table);
+    }
+    // Further examples:
+    databaseUpdateDao.alterTableColumnVarCharLength("t_person", "name", 255); // VARCHAR(100) -> VARCHAR(255)
   }
 }
