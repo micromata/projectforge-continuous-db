@@ -25,11 +25,15 @@ package org.projectforge.continuousdb.jdbc;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.projectforge.continuousdb.DatabaseExecutor;
+import org.projectforge.continuousdb.DatabaseResultRow;
 
 /**
  * Using plain jdbc for executing jdbc commands. DON'T USE THIS CLASS FOR PRODUCTION! This class is only for demonstration purposes, because
@@ -66,20 +70,41 @@ public class DatabaseExecutorImpl implements DatabaseExecutor
     };
     jdbc.execute(sql, ignoreErrors);
   }
-  
+
+  @SuppressWarnings("unchecked")
   @Override
-  public ResultSet query(final String sql, final Object... args)
+  public List<DatabaseResultRow> query(final String sql, final Object... args)
   {
     JdbcExecutor jdbc = new JdbcExecutor(dataSource) {
       @Override
       protected Object execute(PreparedStatement stmt) throws SQLException
       {
-        ResultSet rs = stmt.executeQuery();
-        return rs;
+        List<DatabaseResultRow> list = new LinkedList<DatabaseResultRow>();
+        ResultSet rs = null;
+        try {
+          rs = stmt.executeQuery();
+          while (rs.next() == true) {
+            DatabaseResultRow row = new DatabaseResultRowImpl();
+            list.add(row);
+            ResultSetMetaData metaData = rs.getMetaData();
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+              int type = metaData.getColumnType(i);
+              String name = metaData.getColumnName(i);
+              Object value = rs.getObject(i);
+              DatabaseResultRowEntryImpl entry = new DatabaseResultRowEntryImpl(type, name, value);
+              row.add(entry);
+            }
+          }
+          return list;
+        } finally {
+          if (rs != null) {
+            rs.close();
+          }
+        }
       }
     };
     Object obj = jdbc.execute(sql, false);
-    return (ResultSet)obj;
+    return (List<DatabaseResultRow>) obj;
   }
 
   @Override
@@ -89,15 +114,22 @@ public class DatabaseExecutorImpl implements DatabaseExecutor
       @Override
       protected Object execute(PreparedStatement stmt) throws SQLException
       {
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next() == false) {
-          throw new RuntimeException("No result set: " + sql);
+        ResultSet rs = null;
+        try {
+          rs = stmt.executeQuery();
+          if (rs.next() == false) {
+            throw new RuntimeException("No result set: " + sql);
+          }
+          return rs.getInt(1);
+        } finally {
+          if (rs != null) {
+            rs.close();
+          }
         }
-        return rs.getInt(1);
       }
     };
     Object obj = jdbc.execute(sql, false);
-    return (Integer)obj;
+    return (Integer) obj;
   }
 
   @Override
@@ -107,14 +139,10 @@ public class DatabaseExecutorImpl implements DatabaseExecutor
       @Override
       protected Object execute(PreparedStatement stmt) throws SQLException
       {
-        ResultSet rs = stmt.executeQuery();
-        if (rs.next() == false) {
-          throw new RuntimeException("No result set: " + sql);
-        }
         return stmt.executeUpdate();
       }
     };
-    Object obj = jdbc.execute(sql, false);
-    return (Integer)obj;
+    Object obj = jdbc.execute(sql, false, args);
+    return (Integer) obj;
   }
 }
