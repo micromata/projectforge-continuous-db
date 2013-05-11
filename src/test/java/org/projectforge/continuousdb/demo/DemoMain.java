@@ -145,7 +145,7 @@ public class DemoMain
   private void manualModifications()
   {
     Table table = new Table("t_person");
-    if (databaseUpdateDao.doesTableExist(table.getName()) == false) {
+    if (databaseUpdateDao.doesExist(table) == false) {
       table.addAttribute(new TableAttribute("pk", TableAttributeType.INT).setPrimaryKey(true)) //
           .addAttribute(new TableAttribute("birthday", TableAttributeType.DATE)) //
           .addAttribute(new TableAttribute("name", TableAttributeType.VARCHAR, 100).setNullable(false)) //
