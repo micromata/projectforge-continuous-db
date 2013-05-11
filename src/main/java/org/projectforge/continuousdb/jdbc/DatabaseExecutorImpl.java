@@ -66,6 +66,21 @@ public class DatabaseExecutorImpl implements DatabaseExecutor
     };
     jdbc.execute(sql, ignoreErrors);
   }
+  
+  @Override
+  public ResultSet query(final String sql, final Object... args)
+  {
+    JdbcExecutor jdbc = new JdbcExecutor(dataSource) {
+      @Override
+      protected Object execute(PreparedStatement stmt) throws SQLException
+      {
+        ResultSet rs = stmt.executeQuery();
+        return rs;
+      }
+    };
+    Object obj = jdbc.execute(sql, false);
+    return (ResultSet)obj;
+  }
 
   @Override
   public int queryForInt(final String sql, Object... args)

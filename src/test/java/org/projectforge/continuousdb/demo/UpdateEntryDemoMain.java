@@ -40,7 +40,6 @@ import org.projectforge.continuousdb.demo.entities.GroupDO;
 import org.projectforge.continuousdb.demo.entities.GroupTaskAccessDO;
 import org.projectforge.continuousdb.demo.entities.TaskDO;
 import org.projectforge.continuousdb.demo.entities.UserDO;
-import org.projectforge.continuousdb.jdbc.DatabaseExecutorImpl;
 
 /**
  * 
@@ -77,14 +76,9 @@ public class UpdateEntryDemoMain
     // dataSource.setPassword("password");
     dataSource.setUrl("jdbc:hsqldb:testdatabase");
 
-    configuration = new UpdaterConfiguration();
-    configuration.setDialect(DatabaseDialect.HSQL);
-    final DatabaseExecutorImpl databaseExecutor = new DatabaseExecutorImpl();
-    databaseExecutor.setDataSource(dataSource);
-    configuration.setDatabaseExecutor(databaseExecutor);
-    databaseUpdateDao = new DatabaseUpdateDao(configuration);
+    configuration = new UpdaterConfiguration().setDialect(DatabaseDialect.HSQL).setDataSource(dataSource);
+    databaseUpdateDao = configuration.getDatabaseUpdateDao();
     // TableAttribute.register(new TableAttributeHookImpl());
-    configuration.setDatabaseUpdateDao(databaseUpdateDao);
 
     // final SortedSet<UpdateEntry> updateEntries = new TreeSet<UpdateEntry>();
     // updateEntries.addAll(DatabaseCoreUpdates.getUpdateEntries(this));

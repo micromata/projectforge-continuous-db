@@ -32,6 +32,7 @@ import javax.persistence.UniqueConstraint;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
+import org.projectforge.common.DatabaseDialect;
 import org.projectforge.common.StringHelper;
 
 /**
@@ -48,6 +49,11 @@ public class DatabaseUpdateDao
   public DatabaseUpdateDao(UpdaterConfiguration configuration)
   {
     this.configuration = configuration;
+  }
+
+  public DatabaseDialect getDialect()
+  {
+    return this.configuration.getDialect();
   }
 
   private DatabaseSupport getDatabaseSupport()

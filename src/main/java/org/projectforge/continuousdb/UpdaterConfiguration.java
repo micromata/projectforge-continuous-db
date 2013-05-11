@@ -23,7 +23,10 @@
 
 package org.projectforge.continuousdb;
 
+import javax.sql.DataSource;
+
 import org.projectforge.common.DatabaseDialect;
+import org.projectforge.continuousdb.jdbc.DatabaseExecutorImpl;
 
 /**
  * Main class for configuration of this module.
@@ -41,6 +44,8 @@ public class UpdaterConfiguration
   private SystemUpdater systemUpdater;
 
   private DatabaseUpdateDao databaseUpdateDao;
+  
+  private DataSource dataSource;
 
   public void setDatabaseExecutor(DatabaseExecutor databaseExecutor)
   {
@@ -54,17 +59,42 @@ public class UpdaterConfiguration
 
   public DatabaseUpdateDao getDatabaseUpdateDao()
   {
+    if (databaseUpdateDao == null) {
+      databaseUpdateDao = new DatabaseUpdateDao(this);
+    }
     return databaseUpdateDao;
   }
 
-  public void setDialect(DatabaseDialect dialect)
+  /**
+   * @param dialect
+   * @return this for chaining.
+   */
+  public UpdaterConfiguration setDialect(DatabaseDialect dialect)
   {
     this.dialect = dialect;
     this.databaseSupport = null;
+    return this;
+  }
+  
+  /**
+   * @param dataSource
+   * @return this for chaining.
+   */
+  public UpdaterConfiguration setDataSource(DataSource dataSource)
+  {
+    this.dataSource = dataSource;
+    if (databaseExecutor != null) {
+      this.databaseExecutor.setDataSource(dataSource);
+    }
+    return this;
   }
 
   public DatabaseExecutor getDatabaseExecutor()
   {
+    if (databaseExecutor == null) {
+      databaseExecutor = new DatabaseExecutorImpl();
+      databaseExecutor.setDataSource(dataSource);
+    }
     return databaseExecutor;
   }
 

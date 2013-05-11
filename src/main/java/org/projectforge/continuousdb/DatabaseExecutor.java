@@ -23,6 +23,8 @@
 
 package org.projectforge.continuousdb;
 
+import java.sql.ResultSet;
+
 import javax.sql.DataSource;
 
 /**
@@ -32,13 +34,15 @@ import javax.sql.DataSource;
  */
 public interface DatabaseExecutor
 {
-  public void setDataSource(DataSource datasource);
+  public void setDataSource(DataSource dataSource);
   
   public DataSource getDataSource();
 
   public void execute(String sql, boolean ignoreErrors);
 
   public int queryForInt(String sql, Object... args);
+  
+  public ResultSet query(String sql, Object...args);
 
   public int update(String sql, Object... args);
 }
