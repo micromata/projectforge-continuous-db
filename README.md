@@ -44,11 +44,12 @@ if (databaseUpdateDao.doesTableAttributesExist(AddressDO.class, "birthday", "add
 You may create and update the data-base schema without JPA annotations:
 ```java
 Table table = new Table("t_person");
-if (databaseUpdateDao.doesTableExist(table.getName()) == false) {
+if (databaseUpdateDao.doesExist(table) == false) {
   table.addAttribute(new TableAttribute("pk", TableAttributeType.INT).setPrimaryKey(true)) //
        .addAttribute(new TableAttribute("birthday", TableAttributeType.DATE)) //
        .addAttribute(new TableAttribute("name", TableAttributeType.VARCHAR, 100).setNullable(false)) //
-       .addAttribute(new TableAttribute("user_id", TableAttributeType.INT).setForeignTable("t_user").setForeignAttribute("pk"));
+       .addAttribute(new TableAttribute("user_id", TableAttributeType.INT) //
+                    .setForeignTable("t_user").setForeignAttribute("pk"));
   databaseUpdateDao.createTable(table);
 }
 // Further examples:
