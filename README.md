@@ -6,6 +6,14 @@ Use this light-weight package for continuous delivery of your software.
 Any initial setup of the data-base as well as update-scripts are very easy to manage programmatically. The JPA annotations are supported,
 therefore you may set-up a complete data-base schema with only a few lines of code.
 
+## Initialization of package
+
+```java
+DatabaseDialect dialect = HibernateUtils.getDialect(); // Get the current dialect from Hibernate etc.
+UpdaterConfiguration configuration = new UpdaterConfiguration().setDialect(dialect).setDataSource(dataSource);
+databaseUpdateDao = configuration.getDatabaseUpdateDao();
+```
+
 ## Example: Initial setup of a data-base
 
 The following example will create the whole data-base schema for the given entities. Please refer ```DemoMain.java``` for a first example.
