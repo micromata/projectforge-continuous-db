@@ -44,6 +44,9 @@ public class Address1DO extends DefaultBaseDO
 
   private String description;
 
+  /** A nonsense field for demo purposes (will be of type BigDecimal in {@link Address2DO} */
+  private String amount;
+
   @Column(length = 100)
   public String getName()
   {
@@ -85,5 +88,20 @@ public class Address1DO extends DefaultBaseDO
   public void setCity(String city)
   {
     this.city = city;
+  }
+
+  /**
+   * A nonsense field for demo purposes (will be of type BigDecimal in {@link Address2DO}
+   * @return the amount
+   */
+  @Column(length = 10)
+  public String getAmount()
+  {
+    return amount;
+  }
+
+  public void setAmount(String amount)
+  {
+    this.amount = amount;
   }
 }

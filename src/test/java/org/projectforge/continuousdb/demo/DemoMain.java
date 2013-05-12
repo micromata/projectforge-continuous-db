@@ -23,8 +23,12 @@
 
 package org.projectforge.continuousdb.demo;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.apache.commons.dbcp.BasicDataSource;
 import org.projectforge.common.DatabaseDialect;
+import org.projectforge.continuousdb.DatabaseResultRow;
 import org.projectforge.continuousdb.DatabaseUpdateDao;
 import org.projectforge.continuousdb.SchemaGenerator;
 import org.projectforge.continuousdb.Table;
@@ -122,15 +126,44 @@ public class DemoMain
       // Initial creation of t_address because data-base table doesn't yet exist:
       configuration.createSchemaGenerator().add(Address1DO.class).createSchema();
     }
+    // Optional test for demo purposes:
     if (databaseUpdateDao.doesEntitiesExist(Address1DO.class) == false) {
       throw new RuntimeException("What the hell? The table '" + Address1DO.class + "' wasn't created as expected!");
     }
+    
+    // Insert entry for demo purposes:
+    databaseUpdateDao.update("insert into t_address (pk, deleted, name, amount) values (?,?,?,?)", 1, false, "Kai Reinhard", "128.7");
+
     // Table t_address does now exist.
     if (databaseUpdateDao.doesTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
       // One or both attributes don't yet exist, alter table to add the missing columns now:
-      databaseUpdateDao.addTableAttributes(Address2DO.class, "birthday", "address"); // Works also, if one of both attributes does already
-      // exist.
+      databaseUpdateDao.addTableAttributes(Address2DO.class, "birthday", "address");
+      // Works also, if one of both attributes does already exist.
+      
+      // So, convert type of amount:
+      // Rename column:
+      databaseUpdateDao.renameTableAttribute(new Table(Address2DO.class).getName(), "amount", "old_amount");
+      // Create column of new type:
+      databaseUpdateDao.addTableAttributes(Address2DO.class, "amount");
+      // Convert types of any existing table entry:
+      final List<DatabaseResultRow> rows = databaseUpdateDao.query("select pk, old_amount from t_address");
+      if (rows != null) {
+        for (final DatabaseResultRow row : rows) {
+          final Integer pk = (Integer)row.getEntry("pk").getValue();
+          final String amountAsString = (String)row.getEntry("old_amount").getValue();
+          BigDecimal amount = null;
+          if (amountAsString != null && amountAsString.trim().length() > 0) {
+            amount = new BigDecimal(amountAsString);
+          }
+          // Now update the column.
+          databaseUpdateDao.update("update t_address set amount=? where pk=?", amount, pk);
+        }
+      }
+      // Drop the old column:
+      databaseUpdateDao.dropTableAttribute(new Table(Address2DO.class).getName(), "old_amount");
     }
+
+    // Optional test for demo purposes:
     if (databaseUpdateDao.doesTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
       throw new RuntimeException("What the hell? The missing columns 'birthday' and 'address' weren't created as expected!");
     }

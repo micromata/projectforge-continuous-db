@@ -23,6 +23,7 @@
 
 package org.projectforge.continuousdb.demo.entities;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 
 import javax.persistence.Column;
@@ -45,6 +46,9 @@ public class Address2DO extends DefaultBaseDO
   private String address;
 
   private String city;
+
+  /** A nonsense field for demo purposes (was of type String in {@link Address1DO} */
+  private BigDecimal amount;
 
   private Date birthday;
 
@@ -102,6 +106,21 @@ public class Address2DO extends DefaultBaseDO
   public void setCity(String city)
   {
     this.city = city;
+  }
+
+  /**
+   * A nonsense field for demo purposes (was of type String in {@link Address1DO}
+   * @return the amount
+   */
+  @Column(scale = 2, precision = 8)
+  public BigDecimal getAmount()
+  {
+    return amount;
+  }
+
+  public void setAmount(BigDecimal amount)
+  {
+    this.amount = amount;
   }
 
   @Column
