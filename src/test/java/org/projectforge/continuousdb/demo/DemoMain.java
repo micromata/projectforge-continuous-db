@@ -153,6 +153,7 @@ public class DemoMain
           final String amountAsString = (String)row.getEntry("old_amount").getValue();
           BigDecimal amount = null;
           if (amountAsString != null && amountAsString.trim().length() > 0) {
+            // Do some conversion stuff:
             amount = new BigDecimal(amountAsString);
           }
           // Now update the column.
