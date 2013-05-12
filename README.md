@@ -1,7 +1,7 @@
 projectforge-continuous-db
 ==========================
 
-Use this package for continuous delivery of your software.
+Use this light-weight package for continuous delivery of your software.
 
 Any initial setup of the data-base as well as update-scripts are very easy to manage programmatically. The JPA annotations are supported,
 therefore you may set-up a complete data-base schema with only a few lines of code.
