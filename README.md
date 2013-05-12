@@ -11,7 +11,7 @@ You only need to get the current data-base dialect and the javax.sql.DataSource:
 ```java
 DatabaseDialect dialect = DatabaseDialect.PostgreSQL; // Get the current dialect after start-up from Hibernate etc.
 UpdaterConfiguration configuration = new UpdaterConfiguration().setDialect(dialect).setDataSource(dataSource);
-databaseUpdateDao = configuration.getDatabaseUpdateDao();
+DatabaseUpdateDao databaseUpdateDao = configuration.getDatabaseUpdateDao();
 ```
 
 ## Example: Initial setup of a data-base
