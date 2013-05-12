@@ -6,7 +6,7 @@ Use this light-weight package for continuous delivery of your software.
 Any initial setup of the data-base as well as update-scripts are very easy to manage programmatically. The JPA annotations are supported,
 therefore you may set-up a complete data-base schema with only a few lines of code.
 
-## Initialization of package
+## Initialization
 You only need to get the current data-base dialect and the javax.sql.DataSource:
 ```java
 DatabaseDialect dialect = DatabaseDialect.PostgreSQL; // Get the current dialect after start-up from Hibernate etc.
