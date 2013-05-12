@@ -142,7 +142,7 @@ public class DemoMain
       
       // So, convert type of amount:
       // Rename column:
-      databaseUpdateDao.renameTableAttribute(new Table(Address2DO.class).getName(), "amount", "old_amount");
+      databaseUpdateDao.renameTableAttribute("t_address", "amount", "old_amount");
       // Create column of new type:
       databaseUpdateDao.addTableAttributes(Address2DO.class, "amount");
       // Convert types of any existing table entry:
@@ -160,7 +160,7 @@ public class DemoMain
         }
       }
       // Drop the old column:
-      databaseUpdateDao.dropTableAttribute(new Table(Address2DO.class).getName(), "old_amount");
+      databaseUpdateDao.dropTableAttribute("t_address", "old_amount");
     }
 
     // Optional test for demo purposes:
