@@ -40,6 +40,34 @@ if (databaseUpdateDao.doesTableAttributesExist(AddressDO.class, "birthday", "add
 }
 ```
 
+## Example: Migrating data
+
+The following examle (of DemoMain.java) assumes that the type of a column has to be changed from ```VARCHAR``` to a decimal value:
+
+```java
+// Rename column:
+databaseUpdateDao.renameTableAttribute(new Table(Address2DO.class).getName(), "amount", "old_amount");
+// Create column of new type:
+databaseUpdateDao.addTableAttributes(Address2DO.class, "amount");
+// Convert types of any existing table entry:
+final List<DatabaseResultRow> rows = databaseUpdateDao.query("select pk, old_amount from t_address");
+if (rows != null) {
+  for (final DatabaseResultRow row : rows) {
+    final Integer pk = (Integer)row.getEntry("pk").getValue();
+    final String amountAsString = (String)row.getEntry("old_amount").getValue();
+    BigDecimal amount = null;
+    if (amountAsString != null && amountAsString.trim().length() > 0) {
+      amount = new BigDecimal(amountAsString);
+    }
+    // Now update the column.
+    databaseUpdateDao.update("update t_address set amount=? where pk=?", amount, pk);
+  }
+}
+// Drop the old column:
+databaseUpdateDao.dropTableAttribute(new Table(Address2DO.class).getName(), "old_amount");
+}
+```
+
 ## Manual creation without JPA annotations
 You may create and update the data-base schema without JPA annotations:
 ```java
