@@ -7,7 +7,7 @@ Any initial setup of the data-base as well as update-scripts are very easy to ma
 therefore you may set-up a complete data-base schema with only a few lines of code.
 
 ## Initialization of package
-
+You only need to get the current data-base dialect and the javax.sql.DataSource:
 ```java
 DatabaseDialect dialect = HibernateUtils.getDialect(); // Get the current dialect from Hibernate etc.
 UpdaterConfiguration configuration = new UpdaterConfiguration().setDialect(dialect).setDataSource(dataSource);
