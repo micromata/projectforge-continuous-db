@@ -9,7 +9,7 @@ therefore you may set-up a complete data-base schema with only a few lines of co
 ## Initialization of package
 You only need to get the current data-base dialect and the javax.sql.DataSource:
 ```java
-DatabaseDialect dialect = HibernateUtils.getDialect(); // Get the current dialect from Hibernate etc.
+DatabaseDialect dialect = DatabaseDialect.HSQL; // Get the current dialect from Hibernate etc.
 UpdaterConfiguration configuration = new UpdaterConfiguration().setDialect(dialect).setDataSource(dataSource);
 databaseUpdateDao = configuration.getDatabaseUpdateDao();
 ```
