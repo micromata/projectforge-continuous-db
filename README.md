@@ -65,7 +65,6 @@ if (rows != null) {
 }
 // Drop the old column:
 databaseUpdateDao.dropTableAttribute("t_address", "old_amount");
-}
 ```
 
 ## Manual creation without JPA annotations
