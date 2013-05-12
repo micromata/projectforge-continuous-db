@@ -46,7 +46,7 @@ The following examle (of DemoMain.java) assumes that the type of a column has to
 
 ```java
 // Rename column:
-databaseUpdateDao.renameTableAttribute(new Table(Address2DO.class).getName(), "amount", "old_amount");
+databaseUpdateDao.renameTableAttribute("t_address", "amount", "old_amount");
 // Create column of new type:
 databaseUpdateDao.addTableAttributes(Address2DO.class, "amount");
 // Convert types of any existing table entry:
@@ -64,7 +64,7 @@ if (rows != null) {
   }
 }
 // Drop the old column:
-databaseUpdateDao.dropTableAttribute(new Table(Address2DO.class).getName(), "old_amount");
+databaseUpdateDao.dropTableAttribute("t_address", "old_amount");
 }
 ```
 
