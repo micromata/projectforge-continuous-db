@@ -50,11 +50,11 @@ databaseUpdateDao.renameTableAttribute("t_address", "amount", "old_amount");
 // Create column of new type:
 databaseUpdateDao.addTableAttributes(Address2DO.class, "amount");
 // Convert types of any existing table entry:
-final List<DatabaseResultRow> rows = databaseUpdateDao.query("select pk, old_amount from t_address");
+List<DatabaseResultRow> rows = databaseUpdateDao.query("select pk, old_amount from t_address");
 if (rows != null) {
-  for (final DatabaseResultRow row : rows) {
-    final Integer pk = (Integer)row.getEntry("pk").getValue();
-    final String amountAsString = (String)row.getEntry("old_amount").getValue();
+  for (DatabaseResultRow row : rows) {
+    Integer pk = (Integer)row.getEntry("pk").getValue();
+    String amountAsString = (String)row.getEntry("old_amount").getValue();
     BigDecimal amount = null;
     if (amountAsString != null && amountAsString.trim().length() > 0) {
       amount = new BigDecimal(amountAsString);
