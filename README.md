@@ -92,6 +92,14 @@ if (databaseUpdateDao.doesExist(table) == false) {
 databaseUpdateDao.alterTableColumnVarCharLength("t_person", "name", 255); // VARCHAR(100) -> VARCHAR(255)
 ```
 
+## Using log4j or other logging frameworks
+ProjectForge's continuous-db needs only apache-commons as jar. The Java standard logging is used as default. If you need log4j
+you may initialize it before using continuous-db:
+```java
+  Logger.setLoggerBridge(new LoggerBridgeLog4j()); // Before the first log message
+```
+You may use any other logging framework if you implement the LoggerBridge yourself.
+
 ## Advantage in comparison with other tools
 You may organize your data-base inital and update scripts programmatically. Therefore it's very easy to do further migration
 modifications during your update (e. g. merge columns etc.).  
