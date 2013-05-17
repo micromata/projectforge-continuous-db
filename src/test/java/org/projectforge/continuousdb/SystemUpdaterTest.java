@@ -27,12 +27,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.projectforge.continuousdb.SystemUpdater;
-import org.projectforge.continuousdb.UpdateEntry;
-import org.projectforge.continuousdb.UpdateEntryImpl;
-import org.projectforge.continuousdb.UpdatePreCheckStatus;
-import org.projectforge.continuousdb.UpdateRunningStatus;
-import org.projectforge.continuousdb.UpdaterConfiguration;
 
 public class SystemUpdaterTest
 {
