@@ -1,7 +1,7 @@
 projectforge-continuous-db
 ==========================
 
-Use this light-weight package for continuous delivery of your software.
+Use this light-weight package for continuous delivery of your software. Only apache-commons and projectforge-common is needed as external jar!
 
 Any initial setup of the data-base as well as update-scripts are very easy to manage programmatically. The JPA annotations are supported,
 therefore you may set-up a complete data-base schema with only a few lines of code.
@@ -93,7 +93,7 @@ databaseUpdateDao.alterTableColumnVarCharLength("t_person", "name", 255); // VAR
 ```
 
 ## Using log4j or other logging frameworks
-ProjectForge's continuous-db needs only apache-commons as jar. The Java standard logging is used as default. If you need log4j
+ProjectForge's continuous-db uses the Java standard logging as default. If you need log4j
 you may initialize it before using continuous-db:
 ```java
   Logger.setLoggerBridge(new LoggerBridgeLog4j()); // Before the first log message
