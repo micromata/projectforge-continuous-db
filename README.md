@@ -1,7 +1,7 @@
 projectforge-continuous-db
 ==========================
 
-Use this light-weight package for continuous delivery of your software. Only apache-commons and projectforge-common is needed as external jar!
+Use this light-weight package for continuous delivery of your software (only apache-commons.jar and projectforge-common.jar is needed).
 
 Any initial setup of the data-base as well as update-scripts are very easy to manage programmatically. The JPA annotations are supported,
 therefore you may set-up a complete data-base schema with only a few lines of code.
