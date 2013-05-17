@@ -36,6 +36,13 @@
     </dependency>
 
     <!-- Provided stuff (if needed): -->
+    <dependency> <!-- Version check: 2013-05-16 -->
+      <!-- Hibernate uses 3.1 version, but this may result in conflicts with other packages. -->
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.2.1</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency> <!-- Version check: 2010-08-28 -->
       <!-- see: http://repository.jboss.org/nexus/content/groups/public/org/hibernate/hibernate-core/ -->
       <groupId>org.hibernate</groupId>
