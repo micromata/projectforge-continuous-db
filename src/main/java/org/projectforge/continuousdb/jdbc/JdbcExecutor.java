@@ -35,7 +35,7 @@ import javax.sql.DataSource;
  */
 public abstract class JdbcExecutor
 {
-  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(JdbcExecutor.class);
+  private static final org.projectforge.common.Logger log = org.projectforge.common.Logger.getLogger(JdbcExecutor.class);
 
   protected abstract Object execute(PreparedStatement stmt) throws SQLException;
 

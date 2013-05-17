@@ -38,7 +38,7 @@ import javax.persistence.OneToMany;
  */
 public class SchemaGenerator
 {
-  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(SchemaGenerator.class);
+  private static final org.projectforge.common.Logger log = org.projectforge.common.Logger.getLogger(SchemaGenerator.class);
 
   private final DatabaseUpdateDao dao;
 

@@ -43,7 +43,7 @@ import org.projectforge.common.StringHelper;
  */
 public class DatabaseUpdateDao
 {
-  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(DatabaseUpdateDao.class);
+  private static final org.projectforge.common.Logger log = org.projectforge.common.Logger.getLogger(DatabaseUpdateDao.class);
 
   private UpdaterConfiguration configuration;
 

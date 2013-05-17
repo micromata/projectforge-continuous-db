@@ -33,7 +33,7 @@ import org.projectforge.common.DatabaseDialect;
  */
 public class DatabaseSupport
 {
-  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(DatabaseSupport.class);
+  private static final org.projectforge.common.Logger log = org.projectforge.common.Logger.getLogger(DatabaseSupport.class);
 
   private static boolean errorMessageShown = false;
   

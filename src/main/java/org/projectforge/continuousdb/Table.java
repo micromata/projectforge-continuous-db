@@ -46,7 +46,7 @@ public class Table implements Serializable
 {
   private static final long serialVersionUID = -1194016764141859556L;
 
-  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(Table.class);
+  private static final org.projectforge.common.Logger log = org.projectforge.common.Logger.getLogger(Table.class);
 
   private String name;
 

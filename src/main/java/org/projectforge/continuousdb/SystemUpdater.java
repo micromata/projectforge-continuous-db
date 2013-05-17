@@ -35,7 +35,7 @@ import java.util.TreeSet;
  */
 public class SystemUpdater
 {
-  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(SystemUpdater.class);
+  private static final org.projectforge.common.Logger log = org.projectforge.common.Logger.getLogger(SystemUpdater.class);
 
   private UpdaterConfiguration configuration;
 
