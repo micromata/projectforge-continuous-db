@@ -143,6 +143,12 @@ public class DatabaseUpdateDao
     return true;
   }
 
+  /**
+   * 
+   * @param entityClass
+   * @param properties
+   * @return false if at least one property of the given entity doesn't exist in the data-base, otherwise true.
+   */
   public boolean doesTableAttributesExist(final Class< ? > entityClass, final String... properties)
   {
     accessCheck(false);
@@ -150,6 +156,11 @@ public class DatabaseUpdateDao
     return doesTableAttributesExist(table, properties);
   }
 
+  /**
+   * @param table
+   * @param properties
+   * @return false if at least one property of the given table doesn't exist in the data-base, otherwise true.
+   */
   public boolean doesTableAttributesExist(final Table table, final String... properties)
   {
     accessCheck(false);
