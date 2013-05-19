@@ -114,5 +114,21 @@ They have full control over the update process, no magic by automatical schema u
 * Currently only annotations of getter methods are supported (but it should be very easy to support also field annotations).
 * The main JPA annotations are supported. For Hibernate specific annotations such as Type please refer the hook class ```TableAttributeHookImpl``` of the hibernate package.
 
+## Using maven
+### pom.xml (SNAPSHOT)
+```xml
+<dependency>
+  <groupId>org.projectforge</groupId>
+  <artifactId>projectforge-continuous-db</artifactId>
+  <version>5.1.1-SNAPSHOT</version>
+</dependency>
+
+<repository>
+  <id>org.projectforge.repo</id>
+  <name>ProjectForge</name>
+  <url>http://www.projectforge.org/nexus/content/repositories/ProjectForge-Snapshots</url>
+</repository>
+```
+
 ## Developers are welcome!
 Feel free to fork and we appreciate any pull requests.
