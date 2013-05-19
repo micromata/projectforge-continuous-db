@@ -68,7 +68,7 @@ public class SchemaGenerator
     prepareOneToMany();
     prepareManyToMany();
     for (final Table table : tables) {
-      if (dao.doesExist(table) == false) {
+      if (dao.doExist(table) == false) {
         dao.createTable(table);
       }
     }

@@ -88,7 +88,7 @@ public class DatabaseUpdateDao
     return internalDoesTableExist(table);
   }
 
-  public boolean doesEntitiesExist(final Class< ? >... entities)
+  public boolean doEntitiesExist(final Class< ? >... entities)
   {
     accessCheck(false);
     for (final Class< ? > entity : entities) {
@@ -99,7 +99,7 @@ public class DatabaseUpdateDao
     return true;
   }
 
-  public boolean doesExist(final Table... tables)
+  public boolean doExist(final Table... tables)
   {
     accessCheck(false);
     for (final Table table : tables) {
@@ -149,11 +149,11 @@ public class DatabaseUpdateDao
    * @param properties
    * @return false if at least one property of the given entity doesn't exist in the data-base, otherwise true.
    */
-  public boolean doesTableAttributesExist(final Class< ? > entityClass, final String... properties)
+  public boolean doTableAttributesExist(final Class< ? > entityClass, final String... properties)
   {
     accessCheck(false);
     final Table table = new Table(entityClass);
-    return doesTableAttributesExist(table, properties);
+    return doTableAttributesExist(table, properties);
   }
 
   /**
@@ -161,7 +161,7 @@ public class DatabaseUpdateDao
    * @param properties
    * @return false if at least one property of the given table doesn't exist in the data-base, otherwise true.
    */
-  public boolean doesTableAttributesExist(final Table table, final String... properties)
+  public boolean doTableAttributesExist(final Table table, final String... properties)
   {
     accessCheck(false);
     for (final String property : properties) {
@@ -319,7 +319,7 @@ public class DatabaseUpdateDao
   public boolean createTable(final Table table)
   {
     accessCheck(true);
-    if (doesExist(table) == true) {
+    if (doExist(table) == true) {
       log.info("Table '" + table.getName() + "' does already exist.");
       return false;
     }

@@ -103,8 +103,8 @@ public class DemoMain
         AccessEntryDO.class, //
     };
 
-    if (databaseUpdateDao.doesEntitiesExist(doClasses) == false) {
-      if (databaseUpdateDao.doesExist(new Table(UserDO.class)) == false && configuration.getDialect() == DatabaseDialect.PostgreSQL) {
+    if (databaseUpdateDao.doEntitiesExist(doClasses) == false) {
+      if (databaseUpdateDao.doExist(new Table(UserDO.class)) == false && configuration.getDialect() == DatabaseDialect.PostgreSQL) {
         // User table doesn't exist, therefore schema should be empty. PostgreSQL needs sequence for primary keys:
         databaseUpdateDao.createSequence("hibernate_sequence", true);
       }
@@ -122,12 +122,12 @@ public class DemoMain
 
   private void createAndUpdateAddressDO()
   {
-    if (databaseUpdateDao.doesEntitiesExist(Address1DO.class) == false) {
+    if (databaseUpdateDao.doEntitiesExist(Address1DO.class) == false) {
       // Initial creation of t_address because data-base table doesn't yet exist:
       configuration.createSchemaGenerator().add(Address1DO.class).createSchema();
     }
     // Optional test for demo purposes:
-    if (databaseUpdateDao.doesEntitiesExist(Address1DO.class) == false) {
+    if (databaseUpdateDao.doEntitiesExist(Address1DO.class) == false) {
       throw new RuntimeException("What the hell? The table '" + Address1DO.class + "' wasn't created as expected!");
     }
     
@@ -135,7 +135,7 @@ public class DemoMain
     databaseUpdateDao.update("insert into t_address (pk, deleted, name, amount) values (?,?,?,?)", 1, false, "Kai Reinhard", "128.7");
 
     // Table t_address does now exist.
-    if (databaseUpdateDao.doesTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
+    if (databaseUpdateDao.doTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
       // One or both attributes don't yet exist, alter table to add the missing columns now:
       databaseUpdateDao.addTableAttributes(Address2DO.class, "birthday", "address");
       // Works also, if one of both attributes does already exist.
@@ -165,7 +165,7 @@ public class DemoMain
     }
 
     // Optional test for demo purposes:
-    if (databaseUpdateDao.doesTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
+    if (databaseUpdateDao.doTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
       throw new RuntimeException("What the hell? The missing columns 'birthday' and 'address' weren't created as expected!");
     }
   }
@@ -173,7 +173,7 @@ public class DemoMain
   private void manualModifications()
   {
     Table table = new Table("t_person");
-    if (databaseUpdateDao.doesExist(table) == false) {
+    if (databaseUpdateDao.doExist(table) == false) {
       table.addAttribute(new TableAttribute("pk", TableAttributeType.INT).setPrimaryKey(true)) //
           .addAttribute(new TableAttribute("birthday", TableAttributeType.DATE)) //
           .addAttribute(new TableAttribute("name", TableAttributeType.VARCHAR, 100).setNullable(false)) //

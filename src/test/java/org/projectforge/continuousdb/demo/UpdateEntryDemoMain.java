@@ -92,20 +92,20 @@ public class UpdateEntryDemoMain
 
   private void createAndUpdateAddressDO()
   {
-    if (databaseUpdateDao.doesEntitiesExist(Address1DO.class) == false) {
+    if (databaseUpdateDao.doEntitiesExist(Address1DO.class) == false) {
       // Initial creation of t_address because data-base table doesn't yet exist:
       configuration.createSchemaGenerator().add(Address1DO.class).createSchema();
     }
-    if (databaseUpdateDao.doesEntitiesExist(Address1DO.class) == false) {
+    if (databaseUpdateDao.doEntitiesExist(Address1DO.class) == false) {
       throw new RuntimeException("What the hell? The table '" + Address1DO.class + "' wasn't created as expected!");
     }
     // Table t_address does now exist.
-    if (databaseUpdateDao.doesTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
+    if (databaseUpdateDao.doTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
       // One or both attributes don't yet exist, alter table to add the missing columns now:
       databaseUpdateDao.addTableAttributes(Address2DO.class, "birthday", "address"); // Works also, if one of both attributes does already
       // exist.
     }
-    if (databaseUpdateDao.doesTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
+    if (databaseUpdateDao.doTableAttributesExist(Address2DO.class, "birthday", "address") == false) {
       throw new RuntimeException("What the hell? The missing columns 'birthday' and 'address' weren't created as expected!");
     }
   }
@@ -133,7 +133,7 @@ public class UpdateEntryDemoMain
       public UpdatePreCheckStatus runPreCheck()
       {
         // Does the data-base tables already exist?
-        if (databaseUpdateDao.doesEntitiesExist(doClasses) == false) {
+        if (databaseUpdateDao.doEntitiesExist(doClasses) == false) {
           return UpdatePreCheckStatus.READY_FOR_UPDATE;
         }
         return UpdatePreCheckStatus.ALREADY_UPDATED;
@@ -142,7 +142,7 @@ public class UpdateEntryDemoMain
       @Override
       public UpdateRunningStatus runUpdate()
       {
-        if (databaseUpdateDao.doesExist(new Table(UserDO.class)) == false && configuration.getDialect() == DatabaseDialect.PostgreSQL) {
+        if (databaseUpdateDao.doExist(new Table(UserDO.class)) == false && configuration.getDialect() == DatabaseDialect.PostgreSQL) {
           // User table doesn't exist, therefore schema should be empty. PostgreSQL needs sequence for primary keys:
           databaseUpdateDao.createSequence("hibernate_sequence", true);
         }
