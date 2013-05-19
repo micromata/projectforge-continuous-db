@@ -115,6 +115,9 @@ They have full control over the update process, no magic by automatical schema u
 * The main JPA annotations are supported. For Hibernate specific annotations such as Type please refer the hook class ```TableAttributeHookImpl``` of the hibernate package.
 
 ## Using maven
+### pom.xml (stable)
+Cooming soon...
+
 ### pom.xml (SNAPSHOT)
 ```xml
 <dependency>
