@@ -25,7 +25,7 @@ Class< ? >[] entities = new Class< ? >[] {
   AccessEntryDO.class
 };
 
-if (databaseUpdateDao.doesEntitiesExist(entities) == false) {
+if (databaseUpdateDao.doEntitiesExist(entities) == false) {
   // At least one table of the given entities doesn't exist. Create the missing tables:
   SchemaGenerator schemaGenerator = configuration.createSchemaGenerator().add(entities);
   schemaGenerator.createSchema();
@@ -41,7 +41,7 @@ this module very easy for support of more JPA annotations.
 You may add columns to a table within your new version:
 
 ```java
-if (databaseUpdateDao.doesTableAttributesExist(AddressDO.class, "birthday", "address") == false) {
+if (databaseUpdateDao.do  TableAttributesExist(AddressDO.class, "birthday", "address") == false) {
   // One or both attributes don't yet exist, alter table to add the missing columns now:
   databaseUpdateDao.addTableAttributes(Address2DO.class, "birthday", "address");
   // Works also, if one of both attributes does already exist.
