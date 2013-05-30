@@ -57,7 +57,7 @@ public class UserRightDO extends DefaultBaseDO implements Comparable<UserRightDO
   }
 
   /**
-   * Only for storing the right id in the data base.
+   * Only for storing the right id in the database.
    */
   @Column(name = "right_id", length = 40, nullable = false)
   public String getRightId()
@@ -66,7 +66,7 @@ public class UserRightDO extends DefaultBaseDO implements Comparable<UserRightDO
   }
 
   /**
-   * Only for resstoring the right id from the data base.
+   * Only for resstoring the right id from the database.
    */
   public void setRightId(final String rightId)
   {

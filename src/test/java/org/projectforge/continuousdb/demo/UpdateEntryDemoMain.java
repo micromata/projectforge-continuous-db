@@ -93,7 +93,7 @@ public class UpdateEntryDemoMain
   private void createAndUpdateAddressDO()
   {
     if (databaseUpdateDao.doesEntitiesExist(Address1DO.class) == false) {
-      // Initial creation of t_address because data-base table doesn't yet exist:
+      // Initial creation of t_address because database table doesn't yet exist:
       configuration.createSchemaGenerator().add(Address1DO.class).createSchema();
     }
     if (databaseUpdateDao.doesEntitiesExist(Address1DO.class) == false) {
@@ -132,7 +132,7 @@ public class UpdateEntryDemoMain
       @Override
       public UpdatePreCheckStatus runPreCheck()
       {
-        // Does the data-base tables already exist?
+        // Does the database tables already exist?
         if (databaseUpdateDao.doesEntitiesExist(doClasses) == false) {
           return UpdatePreCheckStatus.READY_FOR_UPDATE;
         }

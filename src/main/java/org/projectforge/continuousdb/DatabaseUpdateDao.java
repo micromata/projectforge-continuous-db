@@ -74,7 +74,7 @@ public class DatabaseUpdateDao
 
   /**
    * Does nothing at default. Override this method for checking the access of the user, e. g. only admin user's should be able to manipulate
-   * the data-base.
+   * the database.
    * @param writeaccess
    */
   protected void accessCheck(final boolean writeaccess)
@@ -147,7 +147,7 @@ public class DatabaseUpdateDao
    * 
    * @param entityClass
    * @param properties
-   * @return false if at least one property of the given entity doesn't exist in the data-base, otherwise true.
+   * @return false if at least one property of the given entity doesn't exist in the database, otherwise true.
    */
   public boolean doesTableAttributesExist(final Class< ? > entityClass, final String... properties)
   {
@@ -159,7 +159,7 @@ public class DatabaseUpdateDao
   /**
    * @param table
    * @param properties
-   * @return false if at least one property of the given table doesn't exist in the data-base, otherwise true.
+   * @return false if at least one property of the given table doesn't exist in the database, otherwise true.
    */
   public boolean doesTableAttributesExist(final Table table, final String... properties)
   {
@@ -446,8 +446,8 @@ public class DatabaseUpdateDao
   }
 
   /**
-   * Creates missing data base indices of tables starting with 't_'.
-   * @return Number of successful created data base indices.
+   * Creates missing database indices of tables starting with 't_'.
+   * @return Number of successful created database indices.
    */
   public int createMissingIndices()
   {
@@ -474,7 +474,7 @@ public class DatabaseUpdateDao
   }
 
   /**
-   * You may implement this method to write update entries e. g. in a data-base table.
+   * You may implement this method to write update entries e. g. in a database table.
    * @param updateEntry
    */
   protected void writeUpdateEntryLog(UpdateEntry updateEntry)
@@ -487,7 +487,7 @@ public class DatabaseUpdateDao
     // new Object[] { new Date(), updateEntry.getRegionId(), String.valueOf(updateEntry.getVersion()), updateEntry.getRunningResult(),
     // PFUserContext.getUserId(), updateEntry.getDescription()});
     // } else {
-    // log.info("Data base table '" + table.getName() + "' doesn't (yet) exist. Can't register update (OK).");
+    // log.info("database table '" + table.getName() + "' doesn't (yet) exist. Can't register update (OK).");
     // }
   }
 
@@ -509,7 +509,7 @@ public class DatabaseUpdateDao
   /**
    * @param regionId
    * @param version
-   * @return true, if any entry for the given regionId and version is found in the data-base table t_database_update.
+   * @return true, if any entry for the given regionId and version is found in the database table t_database_update.
    */
   public boolean isVersionUpdated(final String regionId, final String version)
   {
@@ -520,7 +520,7 @@ public class DatabaseUpdateDao
   }
 
   /**
-   * Creates the given data base index if not already exists.
+   * Creates the given database index if not already exists.
    * @param name
    * @param table
    * @param attributes
@@ -614,7 +614,7 @@ public class DatabaseUpdateDao
     if (statement == null) {
       return;
     }
-    log.info("Executing data-base shutdown statement: " + statement);
+    log.info("Executing database shutdown statement: " + statement);
     execute(statement);
   }
 }

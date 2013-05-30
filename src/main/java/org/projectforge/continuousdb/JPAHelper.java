@@ -126,32 +126,42 @@ public class JPAHelper
     return joinColumn;
   }
 
-  public static boolean isPersistencyAnnotationPresent(final AccessibleObject obj)
+  /**
+   * Determine if an accessible object as persistence annotations associated with it
+   * @param obj
+   * @return
+   */
+  public static boolean isPersistenceAnnotationPresent(final AccessibleObject obj)
   {
-    List<Annotation> list = getPersistencyAnnotations(obj);
+    List<Annotation> list = getPersistenceAnnotations(obj);
     return list != null && list.size() > 0;
   }
 
-  public static List<Annotation> getPersistencyAnnotations(final AccessibleObject object)
+  /**
+   * Determine the persistence annotations associated with with an accessible object
+   * @param obj
+   * @return list of annotations
+   */
+  public static List<Annotation> getPersistenceAnnotations(final AccessibleObject object)
   {
     if (object == null) {
       return null;
     }
     List<Annotation> list = null;
-    list = handlePersistencyAnnotation(list, object, Basic.class);
-    list = handlePersistencyAnnotation(list, object, Column.class);
-    list = handlePersistencyAnnotation(list, object, GeneratedValue.class);
-    list = handlePersistencyAnnotation(list, object, Id.class);
-    list = handlePersistencyAnnotation(list, object, JoinColumn.class);
-    list = handlePersistencyAnnotation(list, object, JoinTable.class);
-    list = handlePersistencyAnnotation(list, object, Lob.class);
-    list = handlePersistencyAnnotation(list, object, ManyToMany.class);
-    list = handlePersistencyAnnotation(list, object, ManyToOne.class);
-    list = handlePersistencyAnnotation(list, object, OneToMany.class);
+    list = handlePersistenceAnnotation(list, object, Basic.class);
+    list = handlePersistenceAnnotation(list, object, Column.class);
+    list = handlePersistenceAnnotation(list, object, GeneratedValue.class);
+    list = handlePersistenceAnnotation(list, object, Id.class);
+    list = handlePersistenceAnnotation(list, object, JoinColumn.class);
+    list = handlePersistenceAnnotation(list, object, JoinTable.class);
+    list = handlePersistenceAnnotation(list, object, Lob.class);
+    list = handlePersistenceAnnotation(list, object, ManyToMany.class);
+    list = handlePersistenceAnnotation(list, object, ManyToOne.class);
+    list = handlePersistenceAnnotation(list, object, OneToMany.class);
     return list;
   }
 
-  private static List<Annotation> handlePersistencyAnnotation(List<Annotation> list, final AccessibleObject object,
+  private static List<Annotation> handlePersistenceAnnotation(List<Annotation> list, final AccessibleObject object,
       final Class< ? extends Annotation> annotation)
       {
     if (object.isAnnotationPresent(annotation) == false) {

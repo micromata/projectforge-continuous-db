@@ -59,7 +59,7 @@ public class DemoMain
       main.createInitialSchema();
       // Create and update single table:
       main.createAndUpdateAddressDO();
-      // Create and manipulate data-base manually:
+      // Create and manipulate database manually:
       main.manualModifications();
     } finally {
       if (main != null) {
@@ -123,7 +123,7 @@ public class DemoMain
   private void createAndUpdateAddressDO()
   {
     if (databaseUpdateDao.doesEntitiesExist(Address1DO.class) == false) {
-      // Initial creation of t_address because data-base table doesn't yet exist:
+      // Initial creation of t_address because database table doesn't yet exist:
       configuration.createSchemaGenerator().add(Address1DO.class).createSchema();
     }
     // Optional test for demo purposes:

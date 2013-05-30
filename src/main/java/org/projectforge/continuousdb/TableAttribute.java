@@ -122,7 +122,7 @@ public class TableAttribute implements Serializable
       }
     }
     final boolean primitive = propertyType.isPrimitive();
-    if (JPAHelper.isPersistencyAnnotationPresent(getterMethod) == false) {
+    if (JPAHelper.isPersistenceAnnotationPresent(getterMethod) == false) {
       log.warn("************** ProjectForge schema updater expect JPA annotations at getter method such as @Column for proper functioning!");
     }
     if (type != null) {
@@ -175,7 +175,7 @@ public class TableAttribute implements Serializable
       }
       type = TableAttributeType.INT;
     }
-    this.annotations = JPAHelper.getPersistencyAnnotations(getterMethod);
+    this.annotations = JPAHelper.getPersistenceAnnotations(getterMethod);
     final Id id = JPAHelper.getIdAnnotation(clazz, property);
     if (id != null) {
       this.primaryKey = true;
@@ -309,7 +309,7 @@ public class TableAttribute implements Serializable
   }
 
   /**
-   * @return The name of the property or if not exist the data-base identifier of the attribute.
+   * @return The name of the property or if not exist the database identifier of the attribute.
    */
   public String getProperty()
   {
@@ -334,7 +334,7 @@ public class TableAttribute implements Serializable
   }
 
   /**
-   * @return The data base identifier of the attribute.
+   * @return The database identifier of the attribute.
    */
   public String getName()
   {
