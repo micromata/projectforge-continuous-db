@@ -50,7 +50,7 @@ import org.projectforge.continuousdb.demo.entities.UserDO;
  */
 public class DemoMain
 {
-  public static void main(String[] args)
+  public static void main(final String[] args)
   {
     DemoMain main = null;
     try {
@@ -59,7 +59,7 @@ public class DemoMain
       main.createInitialSchema();
       // Create and update single table:
       main.createAndUpdateAddressDO();
-      // Create and manipulate data-base manually:
+      // Create and manipulate database manually:
       main.manualModifications();
     } finally {
       if (main != null) {
@@ -68,13 +68,13 @@ public class DemoMain
     }
   }
 
-  private UpdaterConfiguration configuration;
+  private final UpdaterConfiguration configuration;
 
-  private DatabaseUpdateDao databaseUpdateDao;
+  private final DatabaseUpdateDao databaseUpdateDao;
 
   private DemoMain()
   {
-    BasicDataSource dataSource = new BasicDataSource();
+    final BasicDataSource dataSource = new BasicDataSource();
     dataSource.setDriverClassName("org.hsqldb.jdbcDriver");
     dataSource.setUsername("sa");
     // dataSource.setPassword("password");
@@ -97,7 +97,7 @@ public class DemoMain
   private void createInitialSchema()
   {
     final Class< ? >[] doClasses = new Class< ? >[] { //
-    // Please note, the order of the entities is the order of their creation!
+        // Please note, the order of the entities is the order of their creation!
         UserDO.class, //
         TaskDO.class, GroupDO.class, TaskDO.class, GroupTaskAccessDO.class, //
         AccessEntryDO.class, //
@@ -123,14 +123,14 @@ public class DemoMain
   private void createAndUpdateAddressDO()
   {
     if (databaseUpdateDao.doEntitiesExist(Address1DO.class) == false) {
-      // Initial creation of t_address because data-base table doesn't yet exist:
+      // Initial creation of t_address because database table doesn't yet exist:
       configuration.createSchemaGenerator().add(Address1DO.class).createSchema();
     }
     // Optional test for demo purposes:
     if (databaseUpdateDao.doEntitiesExist(Address1DO.class) == false) {
       throw new RuntimeException("What the hell? The table '" + Address1DO.class + "' wasn't created as expected!");
     }
-    
+
     // Insert entry for demo purposes:
     databaseUpdateDao.update("insert into t_address (pk, deleted, name, amount) values (?,?,?,?)", 1, false, "Kai Reinhard", "128.7");
 
@@ -139,7 +139,7 @@ public class DemoMain
       // One or both attributes don't yet exist, alter table to add the missing columns now:
       databaseUpdateDao.addTableAttributes(Address2DO.class, "birthday", "address");
       // Works also, if one of both attributes does already exist.
-      
+
       // So, convert type of amount:
       // Rename column:
       databaseUpdateDao.renameTableAttribute("t_address", "amount", "old_amount");
@@ -172,12 +172,12 @@ public class DemoMain
 
   private void manualModifications()
   {
-    Table table = new Table("t_person");
+    final Table table = new Table("t_person");
     if (databaseUpdateDao.doExist(table) == false) {
       table.addAttribute(new TableAttribute("pk", TableAttributeType.INT).setPrimaryKey(true)) //
-          .addAttribute(new TableAttribute("birthday", TableAttributeType.DATE)) //
-          .addAttribute(new TableAttribute("name", TableAttributeType.VARCHAR, 100).setNullable(false)) //
-          .addAttribute(new TableAttribute("user_id", TableAttributeType.INT).setForeignTable("t_user").setForeignAttribute("pk"));
+      .addAttribute(new TableAttribute("birthday", TableAttributeType.DATE)) //
+      .addAttribute(new TableAttribute("name", TableAttributeType.VARCHAR, 100).setNullable(false)) //
+      .addAttribute(new TableAttribute("user_id", TableAttributeType.INT).setForeignTable("t_user").setForeignAttribute("pk"));
       databaseUpdateDao.createTable(table);
     }
     // Further examples:

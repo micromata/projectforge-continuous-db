@@ -48,7 +48,7 @@ import org.projectforge.continuousdb.demo.entities.UserDO;
  */
 public class UpdateEntryDemoMain
 {
-  public static void main(String[] args)
+  public static void main(final String[] args)
   {
     UpdateEntryDemoMain main = null;
     try {
@@ -64,13 +64,13 @@ public class UpdateEntryDemoMain
     }
   }
 
-  private UpdaterConfiguration configuration;
+  private final UpdaterConfiguration configuration;
 
-  private DatabaseUpdateDao databaseUpdateDao;
+  private final DatabaseUpdateDao databaseUpdateDao;
 
   private UpdateEntryDemoMain()
   {
-    BasicDataSource dataSource = new BasicDataSource();
+    final BasicDataSource dataSource = new BasicDataSource();
     dataSource.setDriverClassName("org.hsqldb.jdbcDriver");
     dataSource.setUsername("sa");
     // dataSource.setPassword("password");
@@ -93,7 +93,7 @@ public class UpdateEntryDemoMain
   private void createAndUpdateAddressDO()
   {
     if (databaseUpdateDao.doEntitiesExist(Address1DO.class) == false) {
-      // Initial creation of t_address because data-base table doesn't yet exist:
+      // Initial creation of t_address because database table doesn't yet exist:
       configuration.createSchemaGenerator().add(Address1DO.class).createSchema();
     }
     if (databaseUpdateDao.doEntitiesExist(Address1DO.class) == false) {
@@ -112,27 +112,28 @@ public class UpdateEntryDemoMain
 
   private void createInitialSchema()
   {
-    UpdateEntry initialUpdateEntry = getInitialUpdateEntry();
+    final UpdateEntry initialUpdateEntry = getInitialUpdateEntry();
     if (initialUpdateEntry.runPreCheck() == UpdatePreCheckStatus.READY_FOR_UPDATE) {
       initialUpdateEntry.runUpdate();
     }
   }
-  
-  private UpdateEntry getInitialUpdateEntry() {
+
+  private UpdateEntry getInitialUpdateEntry()
+  {
     final Class< ? >[] doClasses = new Class< ? >[] { //
-    // Please note, the order of the entities is the order of their creation!
+        // Please note, the order of the entities is the order of their creation!
         UserDO.class, //
         TaskDO.class, GroupDO.class, TaskDO.class, GroupTaskAccessDO.class, //
         AccessEntryDO.class, //
     };
 
     @SuppressWarnings("serial")
-    UpdateEntryImpl entry = new UpdateEntryImpl("core", "2013-05-10", "Adds all core tables T_*.") {
+    final UpdateEntryImpl entry = new UpdateEntryImpl("core", "2013-05-10", "Adds all core tables T_*.") {
 
       @Override
       public UpdatePreCheckStatus runPreCheck()
       {
-        // Does the data-base tables already exist?
+        // Does the database tables already exist?
         if (databaseUpdateDao.doEntitiesExist(doClasses) == false) {
           return UpdatePreCheckStatus.READY_FOR_UPDATE;
         }

@@ -30,7 +30,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * Checks whether the data-base is up-to-date or not.
+ * Checks whether the database is up-to-date or not.
  * @author Kai Reinhard (k.reinhard@micromata.de)
  */
 public class SystemUpdater
@@ -84,7 +84,7 @@ public class SystemUpdater
    */
   public boolean isUpdated()
   {
-    log.info("Checking for data-base updates...");
+    log.info("Checking for database updates...");
     final Set<String> checkedRegions = new HashSet<String>();
     for (final UpdateEntry updateEntry : getUpdateEntries()) {
       if (checkedRegions.contains(updateEntry.getRegionId()) == true) {
@@ -94,7 +94,7 @@ public class SystemUpdater
       checkedRegions.add(updateEntry.getRegionId());
       updateEntry.setPreCheckStatus(updateEntry.runPreCheck());
       if (updateEntry.getPreCheckStatus() != UpdatePreCheckStatus.ALREADY_UPDATED) {
-        log.warn("*** Please note: The data-base perhaps has to be updated first before running the ProjectForge web app. Please login as administrator. Status '"
+        log.warn("*** Please note: The database perhaps has to be updated first before running the ProjectForge web app. Please login as administrator. Status '"
             + updateEntry.getPreCheckStatus()
             + "' for update entry '"
             + updateEntry.getRegionId()
@@ -109,7 +109,7 @@ public class SystemUpdater
         return false;
       }
     }
-    log.info("No data-base updates found (OK).");
+    log.info("No database updates found (OK).");
     return true;
   }
 
@@ -161,7 +161,7 @@ public class SystemUpdater
   private static final String[] DATA_BASE_UPDATES_REQUIRED = { //
   "**********************************************************", //
       "***                                                    ***", //
-      "*** It seems that there have to be done some data-base ***", //
+      "*** It seems that there have to be done some database ***", //
       "*** updates first. Please login as administrator!      ***", //
       "*** Otherwise login of any non-administrator user      ***", //
       "*** isn't possible!                                    ***", //

@@ -240,6 +240,6 @@ public class Table implements Serializable
 
   private List<Annotation> handlePersistencyAnnotations(final AccessibleObject object)
   {
-    return JPAHelper.getPersistencyAnnotations(object);
+    return JPAHelper.getPersistenceAnnotations(object);
   }
 }
