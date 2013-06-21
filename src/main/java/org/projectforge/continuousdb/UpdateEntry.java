@@ -93,6 +93,15 @@ public abstract class UpdateEntry implements Serializable, Comparable<UpdateEntr
   {
   }
 
+  /**
+   * Please note: this method is only called for initial update entries!
+   * Does nothing at default.
+   */
+  public int createMissingIndices()
+  {
+    return 0;
+  }
+
   public abstract String getPreCheckResult();
 
   public abstract String getRunningResult();
@@ -100,7 +109,7 @@ public abstract class UpdateEntry implements Serializable, Comparable<UpdateEntr
   @Override
   public String toString()
   {
-    StringBuffer buf = new StringBuffer();
+    final StringBuffer buf = new StringBuffer();
     buf.append(this.getClass()).append("=[");
     if (getRegionId() != null) {
       buf.append("regionId=[").append(getRegionId()).append("]");
