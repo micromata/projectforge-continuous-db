@@ -136,6 +136,9 @@ public class Table implements Serializable
    */
   public String getName()
   {
+    if (StringUtils.isEmpty(this.name) == true && this.superTable != null) {
+      return this.superTable.getName();
+    }
     return name;
   }
 
