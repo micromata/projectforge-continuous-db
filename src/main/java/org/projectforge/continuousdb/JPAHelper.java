@@ -41,6 +41,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 
 import org.projectforge.common.BeanHelper;
 
@@ -71,7 +72,7 @@ public class JPAHelper
    */
   public static Column getColumnAnnotation(final Class< ? > clazz, final String property)
   {
-    Column column = getColumnAnnotation(BeanHelper.determineGetter(clazz, property));
+    Column column = getColumnAnnotation(BeanHelper.determineGetter(clazz, property, false));
     if (column == null) {
       column = getColumnAnnotation(BeanHelper.determineSetter(clazz, property));
       if (column == null) {
@@ -133,7 +134,7 @@ public class JPAHelper
    */
   public static boolean isPersistenceAnnotationPresent(final AccessibleObject obj)
   {
-    List<Annotation> list = getPersistenceAnnotations(obj);
+    final List<Annotation> list = getPersistenceAnnotations(obj);
     return list != null && list.size() > 0;
   }
 
@@ -158,6 +159,7 @@ public class JPAHelper
     list = handlePersistenceAnnotation(list, object, ManyToMany.class);
     list = handlePersistenceAnnotation(list, object, ManyToOne.class);
     list = handlePersistenceAnnotation(list, object, OneToMany.class);
+    list = handlePersistenceAnnotation(list, object, OrderColumn.class);
     return list;
   }
 
