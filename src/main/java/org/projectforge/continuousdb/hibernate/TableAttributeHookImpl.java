@@ -52,6 +52,10 @@ public class TableAttributeHookImpl implements TableAttributeHook
       final String typePropertyValue = annotation.type();
       if ("binary".equals(typePropertyValue) == true) {
         return TableAttributeType.BINARY;
+      } else if ("org.jadira.usertype.dateandtime.joda.PersistentPeriodAsString".equals(typePropertyValue) == true) {
+        return TableAttributeType.VARCHAR;
+      } else if ("org.jadira.usertype.dateandtime.joda.PersistentDateTime".equals(typePropertyValue) == true) {
+        return TableAttributeType.TIMESTAMP;
       }
     }
     return null;
