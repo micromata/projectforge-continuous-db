@@ -30,6 +30,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -69,10 +70,14 @@ public class SchemaGenerator
   {
     prepareOneToMany();
     prepareManyToMany();
+    prepareSuperTables();
     for (final Table table : tables) {
       final Table superTable = table.getSuperTable();
       if (superTable != null) {
-        handleSuperTable(superTable);
+        if (dao.doExist(superTable) == true) {
+          continue;
+        }
+        dao.createTable(superTable);
       } else if (dao.doExist(table) == false) {
         dao.createTable(table);
       }
@@ -80,14 +85,11 @@ public class SchemaGenerator
     return this;
   }
 
-  void handleSuperTable(final Table superTable)
+  void prepareSuperTables()
   {
-    if (dao.doExist(superTable) == true) {
-      // Does already exist.
-      return;
-    }
     for (final Table table : tables) {
-      if (table.getSuperTable() != superTable) {
+      final Table superTable = table.getSuperTable();
+      if (superTable == null) {
         continue;
       }
       // Add additional attributes:
@@ -102,14 +104,19 @@ public class SchemaGenerator
         superTable.addAttribute(attr);
       }
     }
-    dao.createTable(superTable);
   }
 
   void prepareOneToMany()
   {
     for (final Table table : tables) {
+      final List<TableAttribute> newAttrs = new LinkedList<TableAttribute>();
       for (final TableAttribute attr : table.getAttributes()) {
         if (attr.getType().isIn(TableAttributeType.SET, TableAttributeType.LIST) == true) {
+          final OrderColumn orderColumn = attr.getAnnotation(OrderColumn.class);
+          if (orderColumn != null) {
+            final String name = orderColumn.name().length() > 0 ? orderColumn.name() : attr.getName() + "_ORDER";
+            newAttrs.add(new TableAttribute(name, TableAttributeType.INT));
+          }
           final OneToMany oneToMany = attr.getAnnotation(OneToMany.class);
           if (oneToMany == null) {
             continue;
@@ -165,6 +172,7 @@ public class SchemaGenerator
           }
         }
       }
+      table.getAttributes().addAll(newAttrs);
     }
   }
 
