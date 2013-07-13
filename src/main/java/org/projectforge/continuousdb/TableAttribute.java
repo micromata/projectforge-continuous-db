@@ -113,8 +113,8 @@ public class TableAttribute implements Serializable
       throw new IllegalStateException("Can't determine getter: " + clazz + "." + property);
     }
     propertyType = BeanHelper.determinePropertyType(getterMethod);
-    //final boolean typePropertyPresent = false;
-    //final String typePropertyValue = null;
+    // final boolean typePropertyPresent = false;
+    // final String typePropertyValue = null;
     for (final TableAttributeHook hook : hooks) {
       type = hook.determineType(getterMethod);
       if (type != null) {
@@ -150,12 +150,17 @@ public class TableAttribute implements Serializable
       type = TableAttributeType.SET;
       setGenericReturnType(getterMethod);
       // } else if (typePropertyPresent == true && "binary".equals(typePropertyValue) == true) {
-      //  type = TableAttributeType.BINARY;
+      // type = TableAttributeType.BINARY;
     } else {
       final Entity entity = propertyType.getAnnotation(Entity.class);
-      final javax.persistence.Table table = propertyType.getAnnotation(javax.persistence.Table.class);
-      if (entity != null && table != null && StringUtils.isNotEmpty(table.name()) == true) {
-        this.foreignTable = table.name();
+      if (entity != null) {
+        final javax.persistence.Table table = propertyType.getAnnotation(javax.persistence.Table.class);
+        if (table != null) {
+          this.foreignTable = table.name();
+        } else {
+          this.foreignTable = new Table(propertyType).getName();
+        }
+        // if (entity != null && table != null && StringUtils.isNotEmpty(table.name()) == true) {
         final String idProperty = JPAHelper.getIdProperty(propertyType);
         if (idProperty == null) {
           log.info("Id property not found for class '" + propertyType + "'): " + clazz + "." + property);
@@ -166,12 +171,7 @@ public class TableAttribute implements Serializable
           this.foreignAttribute = column.name();
         }
       } else {
-        log.info("Unsupported property (@Entity, @Table and @Table.name expected for the destination class '"
-            + propertyType
-            + "'): "
-            + clazz
-            + "."
-            + property);
+        log.info("Unsupported property (@Entity expected for the destination class '" + propertyType + "'): " + clazz + "." + property);
       }
       type = TableAttributeType.INT;
     }
