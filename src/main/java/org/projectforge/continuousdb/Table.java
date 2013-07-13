@@ -31,6 +31,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.UniqueConstraint;
 
@@ -50,22 +53,34 @@ public class Table implements Serializable
 
   private String name;
 
+  private DiscriminatorColumn discriminatorColumn;
+
   private Class< ? > entityClass;
 
   private UniqueConstraint[] uniqueConstraints;
 
   private final List<TableAttribute> attributes = new ArrayList<TableAttribute>();
 
+  private Table superTable;
+
   public Table(final Class< ? > entityClass)
   {
     this.entityClass = entityClass;
     final Entity entity = entityClass.getAnnotation(Entity.class);
     final javax.persistence.Table table = entityClass.getAnnotation(javax.persistence.Table.class);
-    if (entity != null && table != null && StringUtils.isNotEmpty(table.name()) == true) {
+    final DiscriminatorValue discriminatorValue = entityClass.getAnnotation(DiscriminatorValue.class);
+    discriminatorColumn = entityClass.getAnnotation(DiscriminatorColumn.class);
+    if (entity == null) {
+      log.info("Unsupported class (@Entity expected): " + entityClass);
+      return;
+    }
+    if (table != null && StringUtils.isNotEmpty(table.name()) == true) {
       this.name = table.name();
       uniqueConstraints = table.uniqueConstraints();
+    } else if (discriminatorValue != null) {
+      this.superTable = new Table(entityClass.getSuperclass());
     } else {
-      log.info("Unsupported class (@Entity, @Table and @Table.name expected): " + entityClass);
+      log.info("Unsupported class (@Table and @Table.name or @DiscriminatorValue expected): " + entityClass);
     }
   }
 
@@ -122,6 +137,24 @@ public class Table implements Serializable
   public String getName()
   {
     return name;
+  }
+
+  /**
+   * @return the superTable
+   */
+  public Table getSuperTable()
+  {
+    return superTable;
+  }
+
+  /**
+   * @param superTable the superTable to set
+   * @return this for chaining.
+   */
+  public Table setSuperTable(final Table superTable)
+  {
+    this.superTable = superTable;
+    return this;
   }
 
   /**
@@ -192,7 +225,7 @@ public class Table implements Serializable
   }
 
   /**
-   * Adds all attributes which are annotated with Column (getter, setter or fields).
+   * Adds all attributes which are annotated with Column (getter or fields).
    * @return this for chaining.
    */
   public Table autoAddAttributes()
@@ -200,7 +233,16 @@ public class Table implements Serializable
     if (entityClass == null) {
       throw new IllegalStateException("Entity class isn't set. Can't add attributes from property names. Please set entity class first.");
     }
-    final Field[] fields = BeanHelper.getAllDeclaredFields(entityClass);
+    final Field[] fields;
+    final List<Method> getter;
+    if (this.superTable != null) {
+      // Get only fields of the current entity, all fields of the super class are handled by the super table.
+      fields = entityClass.getDeclaredFields();
+      getter = BeanHelper.getAllGetterMethods(entityClass, false);
+    } else {
+      fields = BeanHelper.getAllDeclaredFields(entityClass);
+      getter = BeanHelper.getAllGetterMethods(entityClass);
+    }
     for (final Field field : fields) {
       final List<Annotation> annotations = handlePersistencyAnnotations(field);
       if (annotations == null) {
@@ -212,7 +254,6 @@ public class Table implements Serializable
       }
       addTableAttribute(fieldName, annotations);
     }
-    final List<Method> getter = BeanHelper.getAllGetterMethods(entityClass);
     for (final Method method : getter) {
       final List<Annotation> annotations = handlePersistencyAnnotations(method);
       if (annotations == null) {
@@ -227,6 +268,22 @@ public class Table implements Serializable
       } else {
         log.error("Can't determine property of getter method: '" + method.getName());
       }
+    }
+    if (this.discriminatorColumn != null) {
+      TableAttributeType type;
+      if (this.discriminatorColumn.discriminatorType() == DiscriminatorType.CHAR) {
+        type = TableAttributeType.CHAR;
+      } else if (this.discriminatorColumn.discriminatorType() == DiscriminatorType.INTEGER) {
+        type = TableAttributeType.INT;
+
+      } else {
+        type = TableAttributeType.VARCHAR;
+      }
+      final TableAttribute attr = new TableAttribute(this.discriminatorColumn.name(), type);
+      if (type == TableAttributeType.VARCHAR) {
+        attr.setLength(31);
+      }
+      addAttribute(attr);
     }
     return this;
   }
