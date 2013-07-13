@@ -31,6 +31,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
+import org.apache.commons.collections.CollectionUtils;
+
 /**
  * 
  * @author Kai Reinhard (k.reinhard@micromata.de)
@@ -68,11 +70,39 @@ public class SchemaGenerator
     prepareOneToMany();
     prepareManyToMany();
     for (final Table table : tables) {
-      if (dao.doExist(table) == false) {
+      final Table superTable = table.getSuperTable();
+      if (superTable != null) {
+        handleSuperTable(superTable);
+      } else if (dao.doExist(table) == false) {
         dao.createTable(table);
       }
     }
     return this;
+  }
+
+  void handleSuperTable(final Table superTable)
+  {
+    if (dao.doExist(superTable) == true) {
+      // Does already exist.
+      return;
+    }
+    for (final Table table : tables) {
+      if (table.getSuperTable() != superTable) {
+        continue;
+      }
+      // Add additional attributes:
+      if (CollectionUtils.isEmpty(table.getAttributes()) == true) {
+        continue;
+      }
+      for (final TableAttribute attr : table.getAttributes()) {
+        if (superTable.getAttributeByName(attr.getName()) != null) {
+          // Attribute does already exist in super class.
+          continue;
+        }
+        superTable.addAttribute(attr);
+      }
+    }
+    dao.createTable(superTable);
   }
 
   void prepareOneToMany()
@@ -224,6 +254,16 @@ public class SchemaGenerator
     }
     for (final Class< ? > cls : entities) {
       final Table table = new Table(cls);
+      final Table superTable = table.getSuperTable();
+      if (superTable != null) {
+        final Table exisitingSuperTable = getTable(superTable.getEntityClass());
+        if (exisitingSuperTable != null) {
+          table.setSuperTable(exisitingSuperTable);
+        } else {
+          tables.add(superTable);
+          superTable.autoAddAttributes();
+        }
+      }
       table.autoAddAttributes();
       tables.add(table);
     }
