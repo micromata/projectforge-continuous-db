@@ -92,7 +92,7 @@ public class TableAttribute implements Serializable
 
   private List<Annotation> annotations;
 
-  public static void register(TableAttributeHook hook)
+  public static void register(final TableAttributeHook hook)
   {
     hooks.add(hook);
   }
@@ -108,14 +108,14 @@ public class TableAttribute implements Serializable
     this.entityClass = clazz;
     this.property = property;
     this.name = property;
-    final Method getterMethod = BeanHelper.determineGetter(clazz, property);
+    final Method getterMethod = BeanHelper.determineGetter(clazz, property, false);
     if (getterMethod == null) {
       throw new IllegalStateException("Can't determine getter: " + clazz + "." + property);
     }
     propertyType = BeanHelper.determinePropertyType(getterMethod);
-    boolean typePropertyPresent = false;
-    String typePropertyValue = null;
-    for (TableAttributeHook hook : hooks) {
+    //final boolean typePropertyPresent = false;
+    //final String typePropertyValue = null;
+    for (final TableAttributeHook hook : hooks) {
       type = hook.determineType(getterMethod);
       if (type != null) {
         break;
@@ -149,8 +149,8 @@ public class TableAttribute implements Serializable
     } else if (java.util.Set.class.isAssignableFrom(propertyType) == true) {
       type = TableAttributeType.SET;
       setGenericReturnType(getterMethod);
-    } else if (typePropertyPresent == true && "binary".equals(typePropertyValue) == true) {
-      type = TableAttributeType.BINARY;
+      // } else if (typePropertyPresent == true && "binary".equals(typePropertyValue) == true) {
+      //  type = TableAttributeType.BINARY;
     } else {
       final Entity entity = propertyType.getAnnotation(Entity.class);
       final javax.persistence.Table table = propertyType.getAnnotation(javax.persistence.Table.class);
