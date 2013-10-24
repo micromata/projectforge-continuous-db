@@ -25,6 +25,7 @@ package org.projectforge.continuousdb;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -45,9 +46,9 @@ public class DatabaseUpdateDao
 {
   private static final org.projectforge.common.Logger log = org.projectforge.common.Logger.getLogger(DatabaseUpdateDao.class);
 
-  private UpdaterConfiguration configuration;
+  private final UpdaterConfiguration configuration;
 
-  public DatabaseUpdateDao(UpdaterConfiguration configuration)
+  public DatabaseUpdateDao(final UpdaterConfiguration configuration)
   {
     this.configuration = configuration;
   }
@@ -122,7 +123,7 @@ public class DatabaseUpdateDao
      * TABLE_TYPE}); return resultSet.next(); } catch (final SQLException ex) { log.error(ex.getMessage(), ex); throw new
      * InternalErrorException(ex.getMessage()); }
      */
-    DatabaseExecutor jdbc = getDatabaseExecutor();
+    final DatabaseExecutor jdbc = getDatabaseExecutor();
     try {
       jdbc.queryForInt("SELECT COUNT(*) FROM " + table);
     } catch (final Exception ex) {
@@ -134,7 +135,7 @@ public class DatabaseUpdateDao
   public boolean doesTableAttributeExist(final String table, final String attribute)
   {
     accessCheck(false);
-    DatabaseExecutor jdbc = getDatabaseExecutor();
+    final DatabaseExecutor jdbc = getDatabaseExecutor();
     try {
       jdbc.queryForInt("SELECT COUNT(" + attribute + ") FROM " + table);
     } catch (final Exception ex) {
@@ -165,7 +166,11 @@ public class DatabaseUpdateDao
   {
     accessCheck(false);
     for (final String property : properties) {
-      final TableAttribute attr = new TableAttribute(table.getEntityClass(), property);
+      final TableAttribute attr = TableAttribute.createTableAttribute(table.getEntityClass(), property);
+      if (attr == null) {
+        // Transient or getter method not found.
+        return false;
+      }
       if (doesTableAttributeExist(table.getName(), attr.getName()) == false) {
         return false;
       }
@@ -181,7 +186,7 @@ public class DatabaseUpdateDao
 
   public boolean internalIsTableEmpty(final String table)
   {
-    DatabaseExecutor jdbc = getDatabaseExecutor();
+    final DatabaseExecutor jdbc = getDatabaseExecutor();
     try {
       return jdbc.queryForInt("SELECT COUNT(*) FROM " + table) == 0;
     } catch (final Exception ex) {
@@ -260,7 +265,7 @@ public class DatabaseUpdateDao
       if (StringUtils.isNotEmpty(attr.getForeignTable()) == true) {
         // foreign key (user_fk) references t_pf_user(pk)
         buf.append(",\n  FOREIGN KEY (").append(attr.getName()).append(") REFERENCES ").append(attr.getForeignTable()).append("(")
-            .append(attr.getForeignAttribute()).append(")");
+        .append(attr.getForeignAttribute()).append(")");
       }
     }
     final UniqueConstraint[] uniqueConstraints = table.getUniqueConstraints();
@@ -312,8 +317,8 @@ public class DatabaseUpdateDao
   public void buildForeignKeyConstraint(final StringBuffer buf, final String table, final TableAttribute attr)
   {
     buf.append("ALTER TABLE ").append(table).append(" ADD CONSTRAINT ").append(table).append("_").append(attr.getName())
-        .append(" FOREIGN KEY (").append(attr.getName()).append(") REFERENCES ").append(attr.getForeignTable()).append("(")
-        .append(attr.getForeignAttribute()).append(");\n");
+    .append(" FOREIGN KEY (").append(attr.getName()).append(") REFERENCES ").append(attr.getForeignTable()).append("(")
+    .append(attr.getForeignAttribute()).append(");\n");
   }
 
   public boolean createTable(final Table table)
@@ -382,10 +387,16 @@ public class DatabaseUpdateDao
   public boolean addTableAttributes(final Table table, final String... attributeNames)
   {
 
-    final TableAttribute[] attributes = new TableAttribute[attributeNames.length];
+    final ArrayList<TableAttribute> list = new ArrayList<TableAttribute>();
     for (int i = 0; i < attributeNames.length; i++) {
-      attributes[i] = new TableAttribute(table.getEntityClass(), attributeNames[i]);
+      final TableAttribute attr = TableAttribute.createTableAttribute(table.getEntityClass(), attributeNames[i]);
+      if (attr == null) {
+        log.debug("Property '" + table.getName() + "." + attributeNames[i] + "' is transient.");
+        continue;
+      }
+      list.add(attr);
     }
+    final TableAttribute[] attributes = list.toArray(new TableAttribute[0]);
     return addTableAttributes(table, attributes);
   }
 
@@ -477,7 +488,7 @@ public class DatabaseUpdateDao
    * You may implement this method to write update entries e. g. in a database table.
    * @param updateEntry
    */
-  protected void writeUpdateEntryLog(UpdateEntry updateEntry)
+  protected void writeUpdateEntryLog(final UpdateEntry updateEntry)
   {
     // TODO
     // final Table table = new Table(DatabaseUpdateDO.class);
@@ -500,7 +511,7 @@ public class DatabaseUpdateDao
       first = StringHelper.append(buf, first, "?", ",");
     }
     buf.append(")");
-    DatabaseExecutor jdbc = getDatabaseExecutor();
+    final DatabaseExecutor jdbc = getDatabaseExecutor();
     final String sql = buf.toString();
     log.info(sql + "; values = " + StringHelper.listToString(", ", values));
     jdbc.update(sql, values);
@@ -514,7 +525,7 @@ public class DatabaseUpdateDao
   public boolean isVersionUpdated(final String regionId, final String version)
   {
     accessCheck(false);
-    DatabaseExecutor jdbc = getDatabaseExecutor();
+    final DatabaseExecutor jdbc = getDatabaseExecutor();
     final int result = jdbc.queryForInt("select count(*) from t_database_update where region_id=? and version=?", regionId, version);
     return result > 0;
   }
@@ -575,7 +586,7 @@ public class DatabaseUpdateDao
   public void execute(final String jdbcString, final boolean ignoreErrors)
   {
     accessCheck(true);
-    DatabaseExecutor jdbc = getDatabaseExecutor();
+    final DatabaseExecutor jdbc = getDatabaseExecutor();
     jdbc.execute(jdbcString, ignoreErrors);
     log.info(jdbcString);
   }
@@ -583,23 +594,23 @@ public class DatabaseUpdateDao
   public int queryForInt(final String jdbcQuery)
   {
     accessCheck(false);
-    DatabaseExecutor jdbc = getDatabaseExecutor();
+    final DatabaseExecutor jdbc = getDatabaseExecutor();
     log.info(jdbcQuery);
     return jdbc.queryForInt(jdbcQuery);
   }
 
-  public List<DatabaseResultRow> query(final String sql, Object... args)
+  public List<DatabaseResultRow> query(final String sql, final Object... args)
   {
     accessCheck(false);
-    DatabaseExecutor jdbc = getDatabaseExecutor();
+    final DatabaseExecutor jdbc = getDatabaseExecutor();
     log.info(sql);
     return jdbc.query(sql, args);
   }
 
-  public int update(final String sql, Object... args)
+  public int update(final String sql, final Object... args)
   {
     accessCheck(false);
-    DatabaseExecutor jdbc = getDatabaseExecutor();
+    final DatabaseExecutor jdbc = getDatabaseExecutor();
     log.info(sql);
     return jdbc.update(sql, args);
   }
