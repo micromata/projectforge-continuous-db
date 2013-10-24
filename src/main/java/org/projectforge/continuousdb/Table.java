@@ -213,7 +213,12 @@ public class Table implements Serializable
       throw new IllegalStateException("Entity class isn't set. Can't add attributes from property names. Please set entity class first.");
     }
     for (final String property : properties) {
-      addAttribute(new TableAttribute(entityClass, property));
+      final TableAttribute attr = TableAttribute.createTableAttribute(entityClass, property);
+      if (attr == null) {
+        // Transient or getter method not found.
+        continue;
+      }
+      addAttribute(attr);
     }
     return this;
   }
@@ -293,7 +298,11 @@ public class Table implements Serializable
 
   private void addTableAttribute(final String property, final List<Annotation> annotations)
   {
-    final TableAttribute attr = new TableAttribute(entityClass, property);
+    final TableAttribute attr = TableAttribute.createTableAttribute(entityClass, property);
+    if (attr == null) {
+      // Transient or getter method not found.
+      return;
+    }
     attr.setAnnotations(annotations);
     addAttribute(attr);
   }
