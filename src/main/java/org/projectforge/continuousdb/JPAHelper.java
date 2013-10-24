@@ -42,6 +42,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
+import javax.persistence.Transient;
 
 import org.projectforge.common.BeanHelper;
 
@@ -136,6 +137,16 @@ public class JPAHelper
   {
     final List<Annotation> list = getPersistenceAnnotations(obj);
     return list != null && list.size() > 0;
+  }
+
+  /**
+   * Determine if an accessible object as persistence annotations associated with it
+   * @param obj
+   * @return
+   */
+  public static boolean isTransientAnnotationPresent(final AccessibleObject object)
+  {
+    return object.isAnnotationPresent(Transient.class);
   }
 
   /**
