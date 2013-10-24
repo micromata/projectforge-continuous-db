@@ -98,6 +98,26 @@ public class TableAttribute implements Serializable
   }
 
   /**
+   * 
+   * @param clazz
+   * @param property
+   * @return null if getter method not found or getter method is transient.
+   */
+  public static TableAttribute createTableAttribute(final Class< ? > clazz, final String property)
+  {
+    final Method getterMethod = BeanHelper.determineGetter(clazz, property, false);
+    if (getterMethod == null) {
+      throw new IllegalStateException("Can't determine getter: " + clazz + "." + property);
+    }
+    if (JPAHelper.isTransientAnnotationPresent(getterMethod) == true) {
+      // Transient property.
+      return null;
+    }
+    final TableAttribute attr = new TableAttribute(clazz, property);
+    return attr;
+  }
+
+  /**
    * Creates a property and gets the information from the entity class. The JPA annotations Column, JoinColumn, Entity, Table and ID are
    * supported.
    * @param clazz
@@ -105,75 +125,75 @@ public class TableAttribute implements Serializable
    */
   public TableAttribute(final Class< ? > clazz, final String property)
   {
-    this.entityClass = clazz;
-    this.property = property;
-    this.name = property;
     final Method getterMethod = BeanHelper.determineGetter(clazz, property, false);
     if (getterMethod == null) {
       throw new IllegalStateException("Can't determine getter: " + clazz + "." + property);
     }
-    propertyType = BeanHelper.determinePropertyType(getterMethod);
+    this.entityClass = clazz;
+    this.property = property;
+    this.name = property;
+    this.propertyType = BeanHelper.determinePropertyType(getterMethod);
     // final boolean typePropertyPresent = false;
     // final String typePropertyValue = null;
     for (final TableAttributeHook hook : hooks) {
-      type = hook.determineType(getterMethod);
-      if (type != null) {
+      this.type = hook.determineType(getterMethod);
+      if (this.type != null) {
         break;
       }
     }
-    final boolean primitive = propertyType.isPrimitive();
+    final boolean primitive = this.propertyType.isPrimitive();
     if (JPAHelper.isPersistenceAnnotationPresent(getterMethod) == false) {
       log.warn("************** ProjectForge schema updater expect JPA annotations at getter method such as @Column for proper functioning!");
     }
-    if (type != null) {
+    if (this.type != null) {
       // Type is already determined.
-    } else if (Boolean.class.isAssignableFrom(propertyType) == true || Boolean.TYPE.isAssignableFrom(propertyType) == true) {
-      type = TableAttributeType.BOOLEAN;
-    } else if (Integer.class.isAssignableFrom(propertyType) == true || Integer.TYPE.isAssignableFrom(propertyType) == true) {
-      type = TableAttributeType.INT;
-    } else if (Short.class.isAssignableFrom(propertyType) == true || Short.TYPE.isAssignableFrom(propertyType) == true) {
-      type = TableAttributeType.SHORT;
-    } else if (String.class.isAssignableFrom(propertyType) == true || propertyType.isEnum() == true) {
-      type = TableAttributeType.VARCHAR;
-    } else if (BigDecimal.class.isAssignableFrom(propertyType) == true) {
-      type = TableAttributeType.DECIMAL;
-    } else if (java.sql.Date.class.isAssignableFrom(propertyType) == true) {
-      type = TableAttributeType.DATE;
-    } else if (java.util.Date.class.isAssignableFrom(propertyType) == true) {
-      type = TableAttributeType.TIMESTAMP;
-    } else if (java.util.Locale.class.isAssignableFrom(propertyType) == true) {
-      type = TableAttributeType.LOCALE;
-    } else if (java.util.List.class.isAssignableFrom(propertyType) == true) {
-      type = TableAttributeType.LIST;
-      setGenericReturnType(getterMethod);
-    } else if (java.util.Set.class.isAssignableFrom(propertyType) == true) {
-      type = TableAttributeType.SET;
-      setGenericReturnType(getterMethod);
+    } else if (Boolean.class.isAssignableFrom(this.propertyType) == true || Boolean.TYPE.isAssignableFrom(this.propertyType) == true) {
+      this.type = TableAttributeType.BOOLEAN;
+    } else if (Integer.class.isAssignableFrom(this.propertyType) == true || Integer.TYPE.isAssignableFrom(this.propertyType) == true) {
+      this.type = TableAttributeType.INT;
+    } else if (Short.class.isAssignableFrom(this.propertyType) == true || Short.TYPE.isAssignableFrom(this.propertyType) == true) {
+      this.type = TableAttributeType.SHORT;
+    } else if (String.class.isAssignableFrom(this.propertyType) == true || this.propertyType.isEnum() == true) {
+      this.type = TableAttributeType.VARCHAR;
+    } else if (BigDecimal.class.isAssignableFrom(this.propertyType) == true) {
+      this.type = TableAttributeType.DECIMAL;
+    } else if (java.sql.Date.class.isAssignableFrom(this.propertyType) == true) {
+      this.type = TableAttributeType.DATE;
+    } else if (java.util.Date.class.isAssignableFrom(this.propertyType) == true) {
+      this.type = TableAttributeType.TIMESTAMP;
+    } else if (java.util.Locale.class.isAssignableFrom(this.propertyType) == true) {
+      this.type = TableAttributeType.LOCALE;
+    } else if (java.util.List.class.isAssignableFrom(this.propertyType) == true) {
+      this.type = TableAttributeType.LIST;
+      this.setGenericReturnType(getterMethod);
+    } else if (java.util.Set.class.isAssignableFrom(this.propertyType) == true) {
+      this.type = TableAttributeType.SET;
+      this.setGenericReturnType(getterMethod);
       // } else if (typePropertyPresent == true && "binary".equals(typePropertyValue) == true) {
       // type = TableAttributeType.BINARY;
     } else {
-      final Entity entity = propertyType.getAnnotation(Entity.class);
+      final Entity entity = this.propertyType.getAnnotation(Entity.class);
       if (entity != null) {
-        final javax.persistence.Table table = propertyType.getAnnotation(javax.persistence.Table.class);
+        final javax.persistence.Table table = this.propertyType.getAnnotation(javax.persistence.Table.class);
         if (table != null) {
           this.foreignTable = table.name();
         } else {
-          this.foreignTable = new Table(propertyType).getName();
+          this.foreignTable = new Table(this.propertyType).getName();
         }
         // if (entity != null && table != null && StringUtils.isNotEmpty(table.name()) == true) {
-        final String idProperty = JPAHelper.getIdProperty(propertyType);
+        final String idProperty = JPAHelper.getIdProperty(this.propertyType);
         if (idProperty == null) {
-          log.info("Id property not found for class '" + propertyType + "'): " + clazz + "." + property);
+          log.info("Id property not found for class '" + this.propertyType + "'): " + clazz + "." + property);
         }
         this.foreignAttribute = idProperty;
-        final Column column = JPAHelper.getColumnAnnotation(propertyType, idProperty);
+        final Column column = JPAHelper.getColumnAnnotation(this.propertyType, idProperty);
         if (column != null && StringUtils.isNotEmpty(column.name()) == true) {
           this.foreignAttribute = column.name();
         }
       } else {
-        log.info("Unsupported property (@Entity expected for the destination class '" + propertyType + "'): " + clazz + "." + property);
+        log.info("Unsupported property (@Entity expected for the destination class '" + this.propertyType + "'): " + clazz + "." + property);
       }
-      type = TableAttributeType.INT;
+      this.type = TableAttributeType.INT;
     }
     this.annotations = JPAHelper.getPersistenceAnnotations(getterMethod);
     final Id id = JPAHelper.getIdAnnotation(clazz, property);
@@ -182,26 +202,26 @@ public class TableAttribute implements Serializable
       this.nullable = false;
     }
     if (primitive == true) {
-      nullable = false;
+      this.nullable = false;
     }
     final Column column = JPAHelper.getColumnAnnotation(clazz, property);
     if (column != null) {
-      if (isPrimaryKey() == false && primitive == false) {
+      if (this.isPrimaryKey() == false && primitive == false) {
         this.nullable = column.nullable();
       }
       if (StringUtils.isNotEmpty(column.name()) == true) {
         this.name = column.name();
       }
-      if (type.isIn(TableAttributeType.VARCHAR, TableAttributeType.CHAR) == true) {
+      if (this.type.isIn(TableAttributeType.VARCHAR, TableAttributeType.CHAR) == true) {
         this.length = column.length();
       }
-      if (type == TableAttributeType.DECIMAL) {
+      if (this.type == TableAttributeType.DECIMAL) {
         this.precision = column.precision();
         this.scale = column.scale();
       }
       this.unique = column.unique();
     }
-    if (type == TableAttributeType.DECIMAL && this.scale == 0 && this.precision == 0) {
+    if (this.type == TableAttributeType.DECIMAL && this.scale == 0 && this.precision == 0) {
       throw new UnsupportedOperationException("Decimal values should have a precision and scale definition: " + clazz + "." + property);
     }
     final JoinColumn joinColumn = JPAHelper.getJoinColumnAnnotation(clazz, property);
