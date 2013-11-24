@@ -151,6 +151,8 @@ public class TableAttribute implements Serializable
       this.type = TableAttributeType.BOOLEAN;
     } else if (Integer.class.isAssignableFrom(this.propertyType) == true || Integer.TYPE.isAssignableFrom(this.propertyType) == true) {
       this.type = TableAttributeType.INT;
+    } else if (Long.class.isAssignableFrom(this.propertyType) == true || Long.TYPE.isAssignableFrom(this.propertyType) == true) {
+      this.type = TableAttributeType.LONG;
     } else if (Short.class.isAssignableFrom(this.propertyType) == true || Short.TYPE.isAssignableFrom(this.propertyType) == true) {
       this.type = TableAttributeType.SHORT;
     } else if (String.class.isAssignableFrom(this.propertyType) == true || this.propertyType.isEnum() == true) {

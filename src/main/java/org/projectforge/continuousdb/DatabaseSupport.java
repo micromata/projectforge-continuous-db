@@ -36,16 +36,16 @@ public class DatabaseSupport
   private static final org.projectforge.common.Logger log = org.projectforge.common.Logger.getLogger(DatabaseSupport.class);
 
   private static boolean errorMessageShown = false;
-  
+
   private static DatabaseSupport instance;
 
   private final DatabaseDialect dialect;
-  
-  public static void setInstance(DatabaseSupport instance)
+
+  public static void setInstance(final DatabaseSupport instance)
   {
     DatabaseSupport.instance = instance;
   }
-  
+
   public static DatabaseSupport getInstance()
   {
     return instance;
@@ -55,7 +55,7 @@ public class DatabaseSupport
   {
     this.dialect = dialect;
   }
-  
+
   public DatabaseDialect getDialect()
   {
     return dialect;
@@ -121,6 +121,12 @@ public class DatabaseSupport
           return "INT4";
         } else {
           return "INT";
+        }
+      case LONG:
+        if (dialect == DatabaseDialect.PostgreSQL) {
+          return "INT8";
+        } else {
+          return "BIGINT";
         }
       case SHORT:
         return "SMALLINT";
