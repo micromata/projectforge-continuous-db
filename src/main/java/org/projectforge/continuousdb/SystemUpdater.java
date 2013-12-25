@@ -37,11 +37,11 @@ public class SystemUpdater
 {
   private static final org.projectforge.common.Logger log = org.projectforge.common.Logger.getLogger(SystemUpdater.class);
 
-  private UpdaterConfiguration configuration;
+  private final UpdaterConfiguration configuration;
 
   private SortedSet<UpdateEntry> updateEntries;
 
-  public SystemUpdater(UpdaterConfiguration configuration)
+  public SystemUpdater(final UpdaterConfiguration configuration)
   {
     this.configuration = configuration;
   }
@@ -131,7 +131,7 @@ public class SystemUpdater
     return updateEntries;
   }
 
-  public void setUpdateEntries(SortedSet<UpdateEntry> updateEntries)
+  public void setUpdateEntries(final SortedSet<UpdateEntry> updateEntries)
   {
     this.updateEntries = updateEntries;
   }
@@ -159,14 +159,14 @@ public class SystemUpdater
   }
 
   private static final String[] DATA_BASE_UPDATES_REQUIRED = { //
-  "**********************************************************", //
-      "***                                                    ***", //
-      "*** It seems that there have to be done some database ***", //
-      "*** updates first. Please login as administrator!      ***", //
-      "*** Otherwise login of any non-administrator user      ***", //
-      "*** isn't possible!                                    ***", //
-      "*** Don't forget to restart ProjectForge after update. ***", //
-      "*** It's possible that tons of error messages follow.  ***", //
-      "***                                                    ***", //
-      "**********************************************************"};
+    "**********************************************************", //
+    "***                                                    ***", //
+    "*** It seems that there have to be done some database  ***", //
+    "*** updates first. Please login as administrator!      ***", //
+    "*** Otherwise login of any non-administrator user      ***", //
+    "*** isn't possible!                                    ***", //
+    "*** Don't forget to restart ProjectForge after update. ***", //
+    "*** It's possible that tons of error messages follow.  ***", //
+    "***                                                    ***", //
+  "**********************************************************"};
 }
