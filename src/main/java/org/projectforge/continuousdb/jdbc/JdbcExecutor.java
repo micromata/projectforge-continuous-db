@@ -39,14 +39,14 @@ public abstract class JdbcExecutor
 
   protected abstract Object execute(PreparedStatement stmt) throws SQLException;
 
-  private DataSource dataSource;
+  private final DataSource dataSource;
 
-  public JdbcExecutor(DataSource dataSource)
+  public JdbcExecutor(final DataSource dataSource)
   {
     this.dataSource = dataSource;
   }
 
-  public Object execute(String sql, boolean ignoreErrors, Object... args)
+  public Object execute(final String sql, final boolean ignoreErrors, final Object... args)
   {
     Connection con = null;
     PreparedStatement stmt = null;
@@ -62,7 +62,7 @@ public abstract class JdbcExecutor
         }
         result = execute(stmt);
         return result;
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         if (ignoreErrors == false) {
           throw new RuntimeException(e);
         }
@@ -74,7 +74,7 @@ public abstract class JdbcExecutor
       if (stmt != null) {
         try {
           stmt.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
           hasErrors = true;
           log.error("Exception encountered " + e, e);
         }
@@ -82,7 +82,7 @@ public abstract class JdbcExecutor
       if (con != null) {
         try {
           con.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
           hasErrors = true;
           log.error("Exception encountered " + e, e);
         }
