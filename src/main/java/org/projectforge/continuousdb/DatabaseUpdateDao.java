@@ -284,6 +284,12 @@ public class DatabaseUpdateDao
         }
       }
     }
+    for (final TableAttribute attr : table.getAttributes()) {
+      if (attr.isUnique() == false) {
+        continue;
+      }
+      buf.append(",\n  UNIQUE (").append(attr.getName()).append(")");
+    }
     buf.append("\n);\n");
   }
 
