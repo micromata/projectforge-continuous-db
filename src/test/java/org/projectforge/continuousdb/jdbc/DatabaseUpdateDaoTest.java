@@ -39,13 +39,13 @@ public class DatabaseUpdateDaoTest
     final String[] existingConstraintNames = { "t_mytable_uq_tenant_i1", "t_mytable_uq_tenant_i2", "t_mytable_uq_username",
         "t_my_very_long__uq_tenant_i1", "t_my_very_long__uq_tenant_i2", "t_my_very_long__uq_username"};
     assertEquals("t_mytable_uq_tenant_i3",
-        databaseUpdateDao.createUniqueConstraintName("t_mytable", new String[] { "tenant_id", "username"}, existingConstraintNames));
+        databaseUpdateDao.createUniqueConstraintName("t_MYTABLE", new String[] { "Tenant_id", "username"}, existingConstraintNames));
     assertEquals("t_mytable_uq_name1",
         databaseUpdateDao.createUniqueConstraintName("t_mytable", new String[] { "name", "username"}, existingConstraintNames));
     assertEquals("t_my_very_long__uq_tenant_i3",
-        databaseUpdateDao.createUniqueConstraintName("t_my_very_long_table", new String[] { "tenant_id", "username"}, existingConstraintNames));
+        databaseUpdateDao.createUniqueConstraintName("t_my_very_LONG_table", new String[] { "tenant_id", "username"}, existingConstraintNames));
     assertEquals("t_my_very_long__uq_name1",
-        databaseUpdateDao.createUniqueConstraintName("t_my_very_long_table", new String[] { "name", "username"}, existingConstraintNames));
+        databaseUpdateDao.createUniqueConstraintName("t_my_very_long_table", new String[] { "Name", "username"}, existingConstraintNames));
 
     final String[] paranoia = new String[1000];
     for (int i = 0; i < 1000; i++) {

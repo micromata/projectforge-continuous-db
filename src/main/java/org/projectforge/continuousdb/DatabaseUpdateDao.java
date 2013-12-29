@@ -506,9 +506,12 @@ public class DatabaseUpdateDao
   {
     final StringBuilder sb = new StringBuilder();
     sb.append(StringUtils.left(table, 15)).append("_uq_").append(StringUtils.left(columnNames[0], 8));
-    final String prefix = sb.toString();
+    final String prefix = sb.toString().toLowerCase();
     for (int i = 1; i < 1000; i++) {
       final String name = prefix + i;
+      if (existingConstraintNames == null || existingConstraintNames.length == 0) {
+        return name;
+      }
       boolean exists = false;
       for (final String existingName : existingConstraintNames) {
         if (existingName != null && existingName.equals(name) == true) {
@@ -517,7 +520,7 @@ public class DatabaseUpdateDao
         }
       }
       if (exists == false) {
-        return name.toLowerCase();
+        return name;
       }
     }
     final String message = "Oups, can't find any free constraint name! This must be a bug or a database out of control! Tryiing to find a name '"
