@@ -454,7 +454,7 @@ public class DatabaseUpdateDao
   public boolean dropAndRecreateAllUniqueConstraints(final Class< ? > entity)
   {
     accessCheck(true);
-    final Table table = new Table(entity);
+    final Table table = new Table(entity).autoAddAttributes();
     final String[] uniqueConstraintNames = getAllUniqueConstraintNames(table.getName());
     if (uniqueConstraintNames != null) {
       for (final String uniqueConstraintName : uniqueConstraintNames) {
