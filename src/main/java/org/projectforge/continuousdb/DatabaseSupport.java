@@ -216,7 +216,7 @@ public class DatabaseSupport
     if (dialect == DatabaseDialect.PostgreSQL) {
       return "SELECT conname FROM pg_constraint WHERE conrelid = (SELECT oid FROM pg_class WHERE relname LIKE ? and contype='u');";
     } else if (dialect == DatabaseDialect.HSQL) {
-      return "SELECT * FROM INFORMATION_SCHEMA.SYSTEM_TABLE_CONSTRAINTS";
+      return "SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.SYSTEM_TABLE_CONSTRAINTS WHERE CONSTRAINT_TYPE='UNIQUE' AND TABLE_NAME LIKE ?;";
     }
     return null;
   }
