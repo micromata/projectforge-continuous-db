@@ -458,7 +458,7 @@ public class DatabaseUpdateDao
     final String[] uniqueConstraintNames = getAllUniqueConstraintNames(table.getName());
     if (uniqueConstraintNames != null) {
       for (final String uniqueConstraintName : uniqueConstraintNames) {
-        execute("ALTER TABLE " + table.getName() + " DROP CONSTRAINT " + uniqueConstraintName + ";");
+        execute("ALTER TABLE " + table.getName() + " DROP CONSTRAINT " + uniqueConstraintName);
       }
     }
     final UniqueConstraint[] uniqueConstraints = table.getUniqueConstraints();
