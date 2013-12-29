@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -441,12 +442,6 @@ public class DatabaseUpdateDao
     return true;
   }
 
-  public boolean addUniqueConstraint(final Table table, final String constraintName, final String... attributes)
-  {
-    accessCheck(true);
-    return addUniqueConstraint(table.getName(), constraintName, attributes);
-  }
-
   public boolean addUniqueConstraint(final String table, final String constraintName, final String... attributes)
   {
     accessCheck(true);
@@ -454,6 +449,105 @@ public class DatabaseUpdateDao
     buildAddUniqueConstraintStatement(buf, table, constraintName, attributes);
     execute(buf.toString());
     return true;
+  }
+
+  public boolean dropAndRecreateAllUniqueConstraints(final Class< ? > entity)
+  {
+    accessCheck(true);
+    final Table table = new Table(entity);
+    final String[] uniqueConstraintNames = getAllUniqueConstraintNames(table.getName());
+    if (uniqueConstraintNames != null) {
+      for (final String uniqueConstraintName : uniqueConstraintNames) {
+        execute("ALTER TABLE " + table.getName() + " DROP CONSTRAINT " + uniqueConstraintName + ";");
+      }
+    }
+    final UniqueConstraint[] uniqueConstraints = table.getUniqueConstraints();
+    final List<String> existingConstraintNames = new LinkedList<String>();
+    if (uniqueConstraints != null && uniqueConstraints.length > 0) {
+      for (final UniqueConstraint uniqueConstraint : uniqueConstraints) {
+        final String[] columnNames = uniqueConstraint.columnNames();
+        if (columnNames.length > 0) {
+          final String constraintName = createUniqueConstraintName(table.getName(), columnNames,
+              existingConstraintNames.toArray(new String[0]));
+          addUniqueConstraint(table.getName(), constraintName, columnNames);
+          existingConstraintNames.add(constraintName);
+        }
+      }
+    }
+    for (final TableAttribute attr : table.getAttributes()) {
+      if (attr.isUnique() == false) {
+        continue;
+      }
+      final String[] columnNames = new String[1];
+      columnNames[0] = attr.getName();
+      final String constraintName = createUniqueConstraintName(table.getName(), columnNames, existingConstraintNames.toArray(new String[0]));
+      addUniqueConstraint(table.getName(), constraintName, columnNames);
+      existingConstraintNames.add(constraintName);
+    }
+    return true;
+  }
+
+  /**
+   * Max length is 30 (may-be for Oracle compatibility).
+   * @param table
+   * @param columnNames
+   * @param existingConstraintNames
+   * @return The generated constraint name different to the given names.
+   */
+  public String createUniqueConstraintName(final String table, final String[] columnNames, final String[] existingConstraintNames)
+  {
+    final StringBuilder sb = new StringBuilder();
+    sb.append(StringUtils.left(table, 15)).append("_uq_").append(StringUtils.left(columnNames[0], 8));
+    final String prefix = sb.toString();
+    for (int i = 1; i < 1000; i++) {
+      final String name = prefix + i;
+      boolean exists = false;
+      for (final String existingName : existingConstraintNames) {
+        if (existingName != null && existingName.equals(name) == true) {
+          exists = true;
+          break;
+        }
+      }
+      if (exists == false) {
+        return name;
+      }
+    }
+    final String message = "Oups, can't find any free constraint name! This must be a bug or a database out of control! Tryiing to find a name '"
+        + prefix
+        + "[0-999]' for table '"
+        + table
+        + "'.";
+    log.error(message);
+    throw new UnsupportedOperationException(message);
+  }
+
+  public String[] getAllUniqueConstraintNames(final String table)
+  {
+    final String uniqueConstraintNamesSql = getDatabaseSupport().getQueryForAllUniqueConstraintNames();
+    final DatabaseExecutor jdbc = getDatabaseExecutor();
+    final List<DatabaseResultRow> result = jdbc.query(uniqueConstraintNamesSql, table);
+    if (result == null || result.size() == 0) {
+      return null;
+    }
+    final String[] names = new String[result.size()];
+    int i = 0;
+    for (final DatabaseResultRow row : result) {
+      final List<DatabaseResultRowEntry> entries = row.getEntries();
+      final int numberOfEntries = entries != null ? entries.size() : 0;
+      if (numberOfEntries != 1) {
+        log.error("Error while getting unique constraint name for table '"
+            + table
+            + "'. Eeach result entry of the query should be one but is: "
+            + numberOfEntries);
+      }
+      if (numberOfEntries > 0) {
+        final DatabaseResultRowEntry entry = entries.get(0);
+        names[i++] = entry.getValue() != null ? String.valueOf(entry.getValue()) : null;
+      } else {
+        names[i++] = null;
+      }
+    }
+    return names;
   }
 
   /**
