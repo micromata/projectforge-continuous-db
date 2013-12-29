@@ -52,7 +52,7 @@ public class DatabaseExecutorImpl implements DatabaseExecutor
   }
 
   @Override
-  public void setDataSource(DataSource datasource)
+  public void setDataSource(final DataSource datasource)
   {
     this.dataSource = datasource;
   }
@@ -60,9 +60,9 @@ public class DatabaseExecutorImpl implements DatabaseExecutor
   @Override
   public void execute(final String sql, final boolean ignoreErrors)
   {
-    JdbcExecutor jdbc = new JdbcExecutor(dataSource) {
+    final JdbcExecutor jdbc = new JdbcExecutor(dataSource) {
       @Override
-      protected Object execute(PreparedStatement stmt) throws SQLException
+      protected Object execute(final PreparedStatement stmt) throws SQLException
       {
         stmt.execute();
         return null;
@@ -75,23 +75,23 @@ public class DatabaseExecutorImpl implements DatabaseExecutor
   @Override
   public List<DatabaseResultRow> query(final String sql, final Object... args)
   {
-    JdbcExecutor jdbc = new JdbcExecutor(dataSource) {
+    final JdbcExecutor jdbc = new JdbcExecutor(dataSource) {
       @Override
-      protected Object execute(PreparedStatement stmt) throws SQLException
+      protected Object execute(final PreparedStatement stmt) throws SQLException
       {
-        List<DatabaseResultRow> list = new LinkedList<DatabaseResultRow>();
+        final List<DatabaseResultRow> list = new LinkedList<DatabaseResultRow>();
         ResultSet rs = null;
         try {
           rs = stmt.executeQuery();
           while (rs.next() == true) {
-            DatabaseResultRow row = new DatabaseResultRowImpl();
+            final DatabaseResultRow row = new DatabaseResultRowImpl();
             list.add(row);
-            ResultSetMetaData metaData = rs.getMetaData();
+            final ResultSetMetaData metaData = rs.getMetaData();
             for (int i = 1; i <= metaData.getColumnCount(); i++) {
-              int type = metaData.getColumnType(i);
-              String name = metaData.getColumnName(i);
-              Object value = rs.getObject(i);
-              DatabaseResultRowEntryImpl entry = new DatabaseResultRowEntryImpl(type, name, value);
+              final int type = metaData.getColumnType(i);
+              final String name = metaData.getColumnName(i);
+              final Object value = rs.getObject(i);
+              final DatabaseResultRowEntryImpl entry = new DatabaseResultRowEntryImpl(type, name, value);
               row.add(entry);
             }
           }
@@ -103,16 +103,16 @@ public class DatabaseExecutorImpl implements DatabaseExecutor
         }
       }
     };
-    Object obj = jdbc.execute(sql, false);
+    final Object obj = jdbc.execute(sql, false, args);
     return (List<DatabaseResultRow>) obj;
   }
 
   @Override
-  public int queryForInt(final String sql, Object... args)
+  public int queryForInt(final String sql, final Object... args)
   {
-    JdbcExecutor jdbc = new JdbcExecutor(dataSource) {
+    final JdbcExecutor jdbc = new JdbcExecutor(dataSource) {
       @Override
-      protected Object execute(PreparedStatement stmt) throws SQLException
+      protected Object execute(final PreparedStatement stmt) throws SQLException
       {
         ResultSet rs = null;
         try {
@@ -128,21 +128,21 @@ public class DatabaseExecutorImpl implements DatabaseExecutor
         }
       }
     };
-    Object obj = jdbc.execute(sql, false, args);
+    final Object obj = jdbc.execute(sql, false, args);
     return (Integer) obj;
   }
 
   @Override
-  public int update(final String sql, Object... args)
+  public int update(final String sql, final Object... args)
   {
-    JdbcExecutor jdbc = new JdbcExecutor(dataSource) {
+    final JdbcExecutor jdbc = new JdbcExecutor(dataSource) {
       @Override
-      protected Object execute(PreparedStatement stmt) throws SQLException
+      protected Object execute(final PreparedStatement stmt) throws SQLException
       {
         return stmt.executeUpdate();
       }
     };
-    Object obj = jdbc.execute(sql, false, args);
+    final Object obj = jdbc.execute(sql, false, args);
     return (Integer) obj;
   }
 }
