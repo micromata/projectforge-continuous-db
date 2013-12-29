@@ -460,6 +460,8 @@ public class DatabaseUpdateDao
       for (final String uniqueConstraintName : uniqueConstraintNames) {
         execute("ALTER TABLE " + table.getName() + " DROP CONSTRAINT " + uniqueConstraintName);
       }
+    } else {
+      log.info("No unique constraints found for table '" + table.getName() + "'.");
     }
     final UniqueConstraint[] uniqueConstraints = table.getUniqueConstraints();
     final List<String> existingConstraintNames = new LinkedList<String>();
@@ -509,7 +511,7 @@ public class DatabaseUpdateDao
         }
       }
       if (exists == false) {
-        return name;
+        return name.toLowerCase();
       }
     }
     final String message = "Oups, can't find any free constraint name! This must be a bug or a database out of control! Tryiing to find a name '"
@@ -525,7 +527,7 @@ public class DatabaseUpdateDao
   {
     final String uniqueConstraintNamesSql = getDatabaseSupport().getQueryForAllUniqueConstraintNames();
     final DatabaseExecutor jdbc = getDatabaseExecutor();
-    final List<DatabaseResultRow> result = jdbc.query(uniqueConstraintNamesSql, table);
+    final List<DatabaseResultRow> result = jdbc.query(uniqueConstraintNamesSql, table.toLowerCase());
     if (result == null || result.size() == 0) {
       return null;
     }
