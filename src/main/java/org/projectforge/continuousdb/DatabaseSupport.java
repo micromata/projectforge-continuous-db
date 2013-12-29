@@ -210,4 +210,14 @@ public class DatabaseSupport
     }
     return null;
   }
+
+  public String getQueryForAllUniqueConstraintNames()
+  {
+    if (dialect == DatabaseDialect.PostgreSQL) {
+      return "SELECT conname FROM pg_constraint WHERE conrelid = (SELECT oid FROM pg_class WHERE relname LIKE ? and contype='u');";
+    } else if (dialect == DatabaseDialect.HSQL) {
+      return "SELECT * FROM INFORMATION_SCHEMA.SYSTEM_TABLE_CONSTRAINTS";
+    }
+    return null;
+  }
 }
