@@ -76,7 +76,7 @@ public class DatabaseSupport
     } else {
       if (errorMessageShown == false) {
         errorMessageShown = true;
-        log.warn("No database optimization implemented for the used database. Please contact the developer if you have an installation with mor than 10.000 time sheet entries for increasing performance");
+        log.warn("No database optimization implemented for the used database. Please contact the developer if you have an installation with more than 10.000 time sheet entries for increasing performance");
       }
       // No optimization for this database.
       return null;
